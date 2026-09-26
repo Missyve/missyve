@@ -195,10 +195,15 @@
       .fr-highlights p{margin:6px 0;color:#B9B2A0;font-size:12px;line-height:1.5}
       .fr-quote{margin:25px 0 0;color:#B9B2A0;font-family:'Fraunces',Georgia,serif;font-size:16px;line-height:1.55}
       .fr-contact,.fr-assessment{border-bottom:0;padding-bottom:0}
-      .fr-home-break{width:100%;height:clamp(48px,6vw,64px);flex:none}
-      .fr-contact{margin-top:0;flex-direction:column;align-items:center;gap:4px}
-      .fr-copyright{margin:18px 0 24px;color:#B9B2A0;font-size:10px}
-      @media(max-width:520px){.fr-overlay{padding:10px}.fr-panel{max-height:calc(100vh - 20px)}.fr-top{padding:14px 18px}.fr-content{padding:22px 18px}.fr-form{flex-direction:column}.fr-form .fr-button{width:100%}.fr-options{gap:4px}.fr-choice{min-height:70px;padding:7px 2px;font-size:9px}.fr-question{padding:16px}.fr-module{padding:18px}.fr-highlights{gap:14px}}
+      .fr-home-break{width:100%;max-width:420px;height:clamp(24px,4vw,32px);margin-top:clamp(32px,5vw,48px);flex:none;border-top:1px solid var(--line)}
+      .fr-footer{display:flex;width:100%;flex-direction:column;align-items:center;gap:12px}
+      .fr-contact-label{margin:0;color:#B9B2A0;font-size:11px}
+      .fr-footer-row{display:flex;align-items:center;justify-content:center;gap:clamp(18px,3vw,34px);flex-wrap:wrap}
+      .fr-footer .fr-contact{margin:0;flex-direction:row;align-items:center;gap:8px}
+      .fr-footer .social{margin:0}
+      .fr-copyright{margin:0;color:#B9B2A0;font-size:10px}
+      @media(min-width:768px){.page{align-items:flex-start;padding-top:clamp(48px,8vh,88px);padding-bottom:32px}main.hero{width:100%}}
+      @media(max-width:520px){.fr-overlay{padding:10px}.fr-panel{max-height:calc(100vh - 20px)}.fr-top{padding:14px 18px}.fr-content{padding:22px 18px}.fr-form{flex-direction:column}.fr-form .fr-button{width:100%}.fr-options{gap:4px}.fr-choice{min-height:70px;padding:7px 2px;font-size:9px}.fr-question{padding:16px}.fr-module{padding:18px}.fr-highlights{gap:14px}.fr-footer-row{gap:16px}}
       @media(prefers-reduced-motion:reduce){.fr-progress-fill,.fr-button{transition:none}}
     `;
     document.head.append(style);
@@ -214,21 +219,38 @@
     document.title = "MissyVe";
     hero.querySelector(".badge")?.remove();
     contactButton.classList.add("fr-contact");
-    contactButton.innerHTML = '<span class="label">For more info,</span><span>get in touch <span class="arrow" aria-hidden="true">&rarr;</span></span>';
+    contactButton.innerHTML = "<span>get in touch</span>";
     const social = hero.querySelector(".social");
     const portfolio = hero.querySelector(".portfolio");
+    const formusLink = portfolio && portfolio.querySelector('a[href*="formus.ai"]');
+    if (formusLink) {
+      formusLink.querySelector(".name").textContent = "Formus";
+      formusLink.querySelector("img").alt = "Formus logo";
+      formusLink.setAttribute("aria-label", "Formus");
+    }
+    const footer = document.createElement("div");
+    footer.className = "fr-footer";
+    const contactLabel = document.createElement("p");
+    contactLabel.className = "fr-contact-label";
+    contactLabel.textContent = "For more info";
+    const footerRow = document.createElement("div");
+    footerRow.className = "fr-footer-row";
+    footer.append(contactLabel, footerRow);
+    footerRow.append(contactButton);
+    if (social) footerRow.append(social);
+    const copyright = document.createElement("p");
+    copyright.className = "fr-copyright";
+    copyright.textContent = "\u00a9 MissyVe 2026";
+    footer.append(copyright);
     if (portfolio) {
       const sectionBreak = document.createElement("div");
       sectionBreak.className = "fr-home-break";
       sectionBreak.setAttribute("aria-hidden", "true");
       portfolio.insertAdjacentElement("afterend", sectionBreak);
-      sectionBreak.insertAdjacentElement("afterend", contactButton);
+      sectionBreak.insertAdjacentElement("afterend", footer);
+    } else {
+      hero.append(footer);
     }
-    if (social) contactButton.insertAdjacentElement("afterend", social);
-    const copyright = document.createElement("p");
-    copyright.className = "fr-copyright";
-    copyright.textContent = "\u00a9 MissyVe 2026";
-    (social || contactButton).insertAdjacentElement("afterend", copyright);
 
     const launchButton = document.createElement("button");
     launchButton.type = "button";
