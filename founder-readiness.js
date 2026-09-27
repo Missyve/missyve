@@ -397,7 +397,7 @@
         <div class="fr-gate">
           <p class="fr-eyebrow">Private assessment</p>
           <h1 class="fr-title" id="fr-dialog-title">Founder Readiness</h1>
-          <p class="fr-copy">Enter your access code to begin. Your answers are saved on this device, so you can pick up where you left off.</p>
+          <p class="fr-copy">Enter your access code to begin. Your answers are saved, so you can pick up where you left off.</p>
           <form class="fr-form" data-form="access">
             <input class="fr-code" type="password" name="code" autocomplete="off" placeholder="Access code" aria-label="Access code" required>
             <button class="fr-button" type="submit">Continue</button>
