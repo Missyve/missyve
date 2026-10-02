@@ -437,12 +437,11 @@
         <div class="fr-module"><h2 id="fr-dialog-title">Where should we send your report?</h2><p>When you finish, we'll email you your full readiness report: your score, your strengths, your focus areas, and your first assignment.</p></div>
         <form class="fr-details" data-form="details" novalidate>
           <label class="fr-field"><span>First name</span><input class="fr-code" type="text" name="name" autocomplete="given-name" value="${esc(state.name)}" required></label>
-          <label class="fr-field"><span>Email</span><input class="fr-code" type="email" name="email" autocomplete="email" inputmode="email" value="${esc(state.email)}" required></label>
+          <label class="fr-field"><span>Email</span><input class="fr-code" type="email" name="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" enterkeyhint="done" value="${esc(state.email)}" required></label>
           <p class="fr-error" role="alert">${message}</p>
           <button class="fr-button fr-wide" type="submit">Start the assessment</button>
           <p class="fr-hint">We'll only use your email to send your report and follow up about founder coaching. Unsubscribe anytime.</p>
         </form>`;
-      body.querySelector("input").focus();
     }
 
     function renderCheckin() {
