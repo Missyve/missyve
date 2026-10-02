@@ -8,7 +8,7 @@
   const CODES = { [ACCESS_CODE]: "workshop" };
   const UNLOCK_WORDS = { why: "why", reality: "reality", mindset: "mindset", capacity: "capacity", people: "support", sustainability: "sustain", results: "ready" };
   // Optional: where coaching buttons go. Leave blank to use email.
-  const BOOKING_URL = "";
+  const BOOKING_URL = "https://calendly.com/melissawood-missyve/30min";
   const CONTACT_EMAIL = "melissa@missyve.co";
   // Your Google Apps Script web app URL (see apps-script.gs). It saves each
   // finished assessment to your Google Sheet and emails the report to the
