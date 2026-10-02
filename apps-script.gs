@@ -88,7 +88,7 @@ function renderPlainText(payload) {
     "SECTION ANSWERS",
     ...(payload.sectionAnswers || []).flatMap((section) => [
       `${section.title} (${section.scorePct}%)`,
-      ...(section.answers || []).map((item) => `${item.question}: ${Array.isArray(item.answer) ? item.answer.join(", ") : item.answer}`)
+      ...(section.answers || []).map((item) => `${answerQuestionLabel(item)}: ${Array.isArray(item.answer) ? item.answer.join(", ") : item.answer}`)
     ]),
     "",
     "CAPACITY INVENTORY",
@@ -105,8 +105,8 @@ function renderPlainText(payload) {
     "CO-FOUNDER / PARTNER ITEMS TO VALIDATE",
     ...(payload.partner && payload.partner.unvalidatedItems || []).map((item) => `${item.question}: ${item.answer}`),
     "",
-    "MISSING 30% REFLECTIONS",
-    ...Object.entries(payload.sectionReflections || {}).map(([section, answer]) => `${section}: ${answer || "No response"}`),
+    "MISSING 30% SUMMARY",
+    ...missing30Lines(payload.missing30Summary),
     "",
     `First assignment: ${payload.firstAssignment || "Choose one item from your missing 30% and make it your first concrete step."}`,
     "",
@@ -119,11 +119,18 @@ function renderPlainText(payload) {
 function renderHtml(payload) {
   const sectionRows = (payload.sectionScores || []).map((item) => `<tr><td>${escapeHtml(item.title)}</td><td>${escapeHtml(item.pct)}%</td></tr>`).join("");
   const retakeRows = (payload.retakeModuleScores || []).map((item) => `<tr><td>${escapeHtml(item.title)} (retake)</td><td>${escapeHtml(item.pct)}%</td></tr>`).join("");
-  const sectionAnswerBlocks = (payload.sectionAnswers || []).map((section) => `<h3>${escapeHtml(section.title)} (${escapeHtml(section.scorePct)}%)</h3><ul>${(section.answers || []).map((item) => `<li><strong>${escapeHtml(item.question)}</strong><br>${escapeHtml(Array.isArray(item.answer) ? item.answer.join(", ") : item.answer)}</li>`).join("")}</ul>`).join("");
+  const sectionAnswerBlocks = (payload.sectionAnswers || []).map((section) => `<h3>${escapeHtml(section.title)} (${escapeHtml(section.scorePct)}%)</h3><ul>${(section.answers || []).map((item) => `<li><strong>${escapeHtml(answerQuestionLabel(item))}</strong><br>${escapeHtml(Array.isArray(item.answer) ? item.answer.join(", ") : item.answer)}</li>`).join("")}</ul>`).join("");
   const capacityRows = (payload.capacity && payload.capacity.inventory || []).map((item) => `<li>${escapeHtml(item.name)}: ${escapeHtml(item.score)}/5</li>`).join("");
   const supportRows = (payload.supportMap || []).map((item) => `<li>${escapeHtml(item.seat)}: ${escapeHtml(item.status || "Not provided")}</li>`).join("");
   const partnerRows = (payload.partner && payload.partner.unvalidatedItems || []).map((item) => `<li><strong>${escapeHtml(item.question)}</strong><br>${escapeHtml(item.answer)}</li>`).join("") || "<li>No unvalidated items reported.</li>";
-  const reflectionRows = Object.entries(payload.sectionReflections || {}).map(([section, answer]) => `<li><strong>${escapeHtml(section)}</strong><br>${escapeHtml(answer || "No response")}</li>`).join("");
+  const missing30Summary = payload.missing30Summary || {};
+  const missing30ReflectionRows = [
+    missing30Summary.mindsetAnswer ? `<li><strong>MINDSET</strong><br>${escapeHtml(missing30Summary.mindsetAnswer)}</li>` : "",
+    ...Object.entries(missing30Summary.sectionReflections || {}).filter(([, answer]) => answer).map(([section, answer]) => `<li><strong>${escapeHtml(section.toUpperCase())}</strong><br>${escapeHtml(answer)}</li>`),
+    `<li><strong>Capacity constraint</strong><br>${missing30Summary.capacityConstraint ? `${escapeHtml(missing30Summary.capacityConstraint.name)} (${escapeHtml(missing30Summary.capacityConstraint.score)}/5)` : "Not identified"}</li>`,
+    `<li><strong>Empty Support seats</strong><br>${escapeHtml((missing30Summary.emptySupportSeats || []).join(", ") || "None")}</li>`,
+    ...(missing30Summary.unvalidatedPartnerItems || []).map((item) => `<li><strong>${escapeHtml(item.question)}</strong><br>${escapeHtml(item.answer)}</li>`)
+  ].filter(Boolean).join("");
   const emptySeats = (payload.emptySupportSeats || []).join(", ") || "None";
   const constraint = payload.capacity && payload.capacity.constraint;
   const bookingUrl = safeLink(payload.bookingUrl);
@@ -144,13 +151,29 @@ function renderHtml(payload) {
     <p><strong>Hours last month:</strong> ${escapeHtml(payload.capacity && payload.capacity.hoursLastMonth || "Not provided")}<br><strong>Runway:</strong> ${escapeHtml(payload.capacity && payload.capacity.runwayMonths || "Not provided")}</p>
     <h2>Support map</h2><ul>${supportRows}</ul><p><strong>Gaps to fill before launch:</strong> ${escapeHtml(emptySeats)}</p>
     <h2>Co-founder / partner items to validate</h2><ul>${partnerRows}</ul>
-    <h2>Your missing 30%</h2><ul>${reflectionRows}</ul>
+    <h2>Your missing 30%</h2><ul>${missing30ReflectionRows}</ul>
     <h2>Your first assignment</h2><p>${escapeHtml(payload.firstAssignment || "Choose one item from your missing 30% and make it your first concrete step.")}</p>
     <h2>30-Day Experiment</h2><p>${escapeHtml(payload.capacity && payload.capacity.homework || "Live the schedule your audit says you'll need for 30 days before committing years.")}</p>
     <p style="margin:28px 0"><a href="${escapeHtml(bookingUrl)}" style="background:#C6A15B;color:#0A1220;text-decoration:none;padding:12px 18px;border-radius:5px;display:inline-block;font-weight:bold">Book a session</a></p>
     <p><a href="${escapeHtml(frameworkUrl)}">Venture Validation Framework</a></p>
     <p>In 30 days, retake the assessment with tonight's score as your baseline. Leadership and Daily Rhythm will be added.</p>
   </div>`;
+}
+
+function answerQuestionLabel(item) {
+  return item.id === "why-reflection" || item.id === "reality-reflection" ? "Your reflection" : item.question;
+}
+
+function missing30Lines(summary) {
+  if (!summary) return ["No missing-30% findings were submitted."];
+  const constraint = summary.capacityConstraint;
+  return [
+    `MINDSET: ${summary.mindsetAnswer || "No response"}`,
+    ...Object.entries(summary.sectionReflections || {}).filter(([, answer]) => answer).map(([section, answer]) => `${section.toUpperCase()}: ${answer}`),
+    `Capacity constraint: ${constraint ? `${constraint.name} (${constraint.score}/5)` : "Not identified"}`,
+    `Empty Support seats: ${(summary.emptySupportSeats || []).join(", ") || "None"}`,
+    ...(summary.unvalidatedPartnerItems || []).map((item) => `${item.question}: ${item.answer}`)
+  ];
 }
 
 function safeLink(value) {

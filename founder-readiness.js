@@ -30,9 +30,8 @@
         L("why-q1", "Last month, I explained to someone close to me why I want to build this, and my reason held up to their questions."),
         L("why-q2", "In the last month, I used a strength, skill, or lived experience of mine to make progress on this problem."),
         L("why-q3", "In the last month, I made room for this work without pretending my real-life responsibilities would disappear."),
-        T("why-timing", "What happened in your life or work in the last month that makes now feel like the time to build this? If nothing changed, say so."),
-        T("why-sentence", "Finish the sentence: I want to build this because…", "Name the problem and why it matters. Avoid generic answers like money, freedom, or being your own boss."),
-        T("why-reflection", "What from this section belongs in your missing 30%?")
+        T("why-sentence", "Finish the sentence: I want to build this because…", "Name the problem, why it matters to you, and why now. Avoid generic answers like money, freedom, or being your own boss."),
+        T("why-reflection", "What's one part of your why you're still unsure about?")
       ]
     },
     {
@@ -42,7 +41,7 @@
         L("reality-q1", "Last month, I made a real tradeoff to create room for this work, and I can name what I gave up."),
         L("reality-q2", "Last month, I talked with the people affected by this plan about what it asks of our time, money, or responsibilities."),
         T("reality-q3", "Think of the last time life paused or disrupted a plan you cared about. What did you actually do next?", "Share only what you're comfortable with."),
-        T("reality-reflection", "What from this section belongs in your missing 30%?")
+        T("reality-reflection", "What's one tradeoff you haven't made peace with yet?")
       ]
     },
     {
@@ -57,7 +56,7 @@
     {
       id: "capacity", name: "CAPACITY", title: "Capacity is five accounts, not one.", description: "You can be rich in one and bankrupt in another.",
       questions: [
-        account("capacity-time", "Time", "Looking at last month, how much usable time did you actually have for building after work, care, and life commitments?"),
+        account("capacity-time", "Time", "Looking at last month, how much usable time did you actually have for building after personal life commitments?"),
         account("capacity-energy", "Energy", "Last month, how much energy did you actually have left for founder work after your existing responsibilities?"),
         account("capacity-money", "Money", "Based on last month's income and expenses, how much financial room did you have to work on this without risking essentials?"),
         account("capacity-emotional", "Emotional bandwidth", "Last month, how much room did you have for uncertainty, setbacks, and difficult decisions?"),
@@ -573,6 +572,14 @@
           : section.id === "people" ? section.reflection : section.questions.find((question) => question.id.endsWith("-reflection"));
         return [section.id, state.answers[reflectionQuestion.id] || ""];
       }));
+      const emptySupportSeats = supportMap.filter((seat) => seat.status === "Empty").map((seat) => seat.seat);
+      const missing30Summary = {
+        mindsetAnswer: reflections.mindset,
+        sectionReflections: { capacity: reflections.capacity, people: reflections.people, sustainability: reflections.sustainability },
+        capacityConstraint: lowestCapacity,
+        emptySupportSeats,
+        unvalidatedPartnerItems: partnerGaps
+      };
       const focus = [...sorted].slice(0, 2);
       const strengths = [...sorted].slice(-2).reverse();
       const gapFromStarting = totalPct - state.startingNumber;
@@ -580,8 +587,8 @@
       return {
         totalPct, profile, dimensions, sectionScores, retakeScores, focus, strengths,
         capacityAccounts, lowestCapacity, partnerStatus: state.answers["partner-status"] || "",
-        partnerGaps, supportMap, emptySupportSeats: supportMap.filter((seat) => seat.status === "Empty").map((seat) => seat.seat),
-        sectionAnswers, reflections, firstAssignment: state.answers["mindset-missing"] || "",
+        partnerGaps, supportMap, emptySupportSeats,
+        sectionAnswers, reflections, missing30Summary, firstAssignment: state.answers["mindset-missing"] || "",
         gapFromStarting, gapFromBaseline
       };
     }
@@ -621,6 +628,7 @@
         supportMap: report.supportMap,
         emptySupportSeats: report.emptySupportSeats,
         sectionReflections: report.reflections,
+        missing30Summary: report.missing30Summary,
         firstAssignment: report.firstAssignment,
         retakeModuleAnswers: state.retake ? RETAKE_MODULES.map((module) => ({ id: module.id, title: module.title, answers: module.questions.map(answerRecord).filter(Boolean) })) : [],
         bookingUrl: bookingLink(),
@@ -646,11 +654,18 @@
       }
       const rows = report.dimensions.map((item) => `<div class="fr-score-row"><div class="fr-score-head"><span>${esc(item.title)}</span><span>${item.pct}%</span></div><div class="fr-score-track"><span style="width:${item.pct}%"></span></div></div>`).join("");
       const reflections = report.sectionAnswers.map((section) => {
-        const items = section.answers.filter((item) => item.id.endsWith("reflection") || item.id === "mindset-missing" || item.id === "why-sentence" || item.id === "why-timing" || item.id === "reality-protect" || item.id === "reality-q3" || item.id === "sustain-care");
-        return items.length ? `<section class="fr-result-block"><h3>${esc(section.title)}</h3>${items.map((item) => `<p class="fr-reflection"><span>${esc(item.question)}</span>${esc(Array.isArray(item.answer) ? item.answer.join(", ") : item.answer)}</p>`).join("")}</section>` : "";
+        const items = section.answers.filter((item) => item.id.endsWith("reflection") || item.id === "mindset-missing" || item.id === "why-sentence" || item.id === "reality-protect" || item.id === "reality-q3" || item.id === "sustain-care");
+        return items.length ? `<section class="fr-result-block"><h3>${esc(section.title)}</h3>${items.map((item) => `<p class="fr-reflection"><span>${item.id.endsWith("-reflection") ? "Your reflection" : esc(item.question)}</span>${esc(Array.isArray(item.answer) ? item.answer.join(", ") : item.answer)}</p>`).join("")}</section>` : "";
       }).join("");
       const emptySeats = report.emptySupportSeats.length ? report.emptySupportSeats.join(", ") : "None";
-      const partnerGaps = report.partnerGaps.length ? report.partnerGaps.map((item) => `<p class="fr-reflection"><span>${esc(item.question)}</span>${esc(item.answer)}</p>`).join("") : "No unvalidated partner items reported.";
+      const missingSummary = report.missing30Summary;
+      const missingSummaryRows = [
+        missingSummary.mindsetAnswer ? `<p class="fr-reflection"><span>MINDSET</span>${esc(missingSummary.mindsetAnswer)}</p>` : "",
+        ...Object.entries(missingSummary.sectionReflections).filter(([, answer]) => answer).map(([section, answer]) => `<p class="fr-reflection"><span>${esc(section.toUpperCase())}</span>${esc(answer)}</p>`),
+        `<p class="fr-reflection"><span>Capacity constraint</span>${missingSummary.capacityConstraint ? `${esc(missingSummary.capacityConstraint.name)} (${missingSummary.capacityConstraint.score}/5)` : "Not identified"}</p>`,
+        `<p class="fr-reflection"><span>Empty Support seats</span>${esc(emptySeats)}</p>`,
+        ...report.partnerGaps.map((item) => `<p class="fr-reflection"><span>${esc(item.question)}</span>${esc(item.answer)}</p>`)
+      ].filter(Boolean).join("");
       const startingGap = report.gapFromStarting >= 0 ? `+${report.gapFromStarting}` : `${report.gapFromStarting}`;
       const baseline = state.baselinePct === null ? "" : `<p class="fr-copy">Change from your previous score baseline (${state.baselinePct}%): ${report.gapFromBaseline >= 0 ? "+" : ""}${report.gapFromBaseline} points.</p>`;
       const dimensionsLabel = state.retake ? "Six workshop sections plus retake modules" : "Six workshop sections";
@@ -666,10 +681,8 @@
         <p class="fr-gap">Starting number: ${state.startingNumber}%. Final score: ${report.totalPct}%. Gap: ${startingGap} points.</p>
         ${baseline}
         <p class="fr-copy">${esc(report.profile.summary)}</p>
+        <section class="fr-result-block"><h3>Your missing 30%</h3>${missingSummaryRows || "<p>No missing-30% notes were added.</p>"}</section>
         <section class="fr-result-block"><h3>Your first assignment: missing 30%</h3><p>${esc(assignment)}</p></section>
-        ${report.lowestCapacity ? `<section class="fr-result-block"><h3>Capacity constraint</h3><p>${esc(report.lowestCapacity.name)} (${report.lowestCapacity.score}/5)</p></section>` : ""}
-        <section class="fr-result-block"><h3>Gaps to fill before you launch</h3><p>${esc(emptySeats)}</p></section>
-        <section class="fr-result-block"><h3>Co-founder / partner items to validate</h3>${partnerGaps}</section>
         <section class="fr-result-block"><h3>30-Day Experiment</h3><p>Live the schedule your audit says you'll need for 30 days before committing years.</p></section>
         <div class="fr-cta">
           <a class="fr-button" href="${esc(bookingLink())}" target="_blank" rel="noopener">Book a session</a>
