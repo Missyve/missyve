@@ -5,11 +5,8 @@
   // ---------------------------------------------------------------------------
   // Each access code sets a mode. "workshop" = gated sections you open live.
   // "self" = self-paced, all 10 modules, no holds. Add more codes as needed.
-  const CODES = {
-    "femmefounders26": "workshop"
-  };
-  // Words shown on your slides to open each section (case doesn't matter).
-  const UNLOCK_WORDS = { why: "why", reality: "reality", capacity: "capacity", support: "support", results: "ready" };
+  const CODES = { [ACCESS_CODE]: "workshop" };
+  const UNLOCK_WORDS = { why: "why", reality: "reality", mindset: "mindset", capacity: "capacity", people: "support", sustainability: "sustain", results: "ready" };
   // Optional: where coaching buttons go. Leave blank to use email.
   const BOOKING_URL = "";
   const CONTACT_EMAIL = "melissa@missyve.co";
@@ -19,132 +16,102 @@
   const RESULTS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxtnhckqHy2eyVJnMOYl1WR-jOjqzd4e7VxL5EtvUtJiMjiAJ8tT4NK-0Jb28gV2_bIsQ/exec";
 
   const LABELS = ["Strongly disagree", "Disagree", "Neutral", "Agree", "Strongly agree"];
-  const L = (text) => ({ type: "likert", text });
-  const C = (text, options) => ({ type: "choice", text, options });
-  const T = (text, placeholder) => ({ type: "text", text, placeholder });
+  const L = (id, text) => ({ id, type: "likert", text, scored: true, required: true });
+  const T = (id, text, placeholder = "") => ({ id, type: "text", text, placeholder, scored: false, required: false });
+  const options = (values) => values.map(([label, value, score = null]) => ({ label, value, score }));
+  const choice = (id, text, values, extra = {}) => ({ id, type: "choice", text, options: options(values), scored: false, required: true, ...extra });
+  const scoredChoice = (id, text, values) => ({ id, type: "choice", text, options: options(values), scored: true, required: true });
+  const account = (id, name, text) => ({ id, type: "capacity", account: name, text, scored: true, required: true });
 
-  const MODULES = [
+  const SECTIONS = [
     {
-      title: "Why Found?",
-      fullTitle: "Why Do You Want to Be a Founder?",
-      description: "Understanding your core motivation is the foundation of everything. Founders who know their why outlast those who don't.",
-      assignment: "Write your why in one sentence without the words money, freedom, or founder. Then ask whether it would survive ten years of this.",
+      id: "why", name: "WHY", title: "Why this? Why you? Why now?", description: "Your why has to survive your real life.",
       questions: [
-        L("I can clearly articulate a specific problem I want to solve, and it matters deeply to me personally."),
-        L("My desire to build a company comes from an internal drive rather than external pressures like status or financial gain."),
-        L("I have a clear personal definition of what success looks like beyond revenue or valuation."),
-        T("Finish the sentence: I want to build this because...", "Skip the words money, freedom, and founder")
+        L("why-q1", "Last month, I explained to someone close to me why I want to build this, and my reason held up to their questions."),
+        L("why-q2", "In the last month, I used a strength, skill, or lived experience of mine to make progress on this problem."),
+        L("why-q3", "In the last month, I made room for this work without pretending my real-life responsibilities would disappear."),
+        T("why-timing", "What happened in your life or work in the last month that makes now feel like the time to build this? If nothing changed, say so."),
+        T("why-sentence", "Finish the sentence: I want to build this because…", "Name the problem and why it matters. Avoid generic answers like money, freedom, or being your own boss."),
+        T("why-reflection", "What from this section belongs in your missing 30%?")
       ]
     },
     {
-      title: "Reality Check",
-      fullTitle: "Understanding the Founder Reality",
-      description: "Entrepreneurship is an emotional rollercoaster. Honest self-awareness about what it actually demands is not optional.",
-      assignment: "Write two lists: what you're willing to sacrifice and what you're not. Share both with the people closest to you.",
+      id: "reality", name: "REALITY", title: "What happens when life doesn't cooperate?", description: "You don't control the timeline.",
       questions: [
-        L("I know what I'm willing to sacrifice for this, and what I'm not willing to sacrifice."),
-        L("I can tolerate long periods of uncertainty and ambiguity without being paralyzed."),
-        L("The people closest to me understand and support my entrepreneurial ambitions.")
+        T("reality-protect", "What won't you sacrifice?", "Think about what you actually protected last month."),
+        L("reality-q1", "Last month, I made a real tradeoff to create room for this work, and I can name what I gave up."),
+        L("reality-q2", "Last month, I talked with the people affected by this plan about what it asks of our time, money, or responsibilities."),
+        T("reality-q3", "Think of the last time life paused or disrupted a plan you cared about. What did you actually do next?", "Share only what you're comfortable with."),
+        T("reality-reflection", "What from this section belongs in your missing 30%?")
       ]
     },
     {
-      title: "Mindset",
-      fullTitle: "Mindset Shifts for Entrepreneurship",
-      description: "The right mental frameworks separate founders who adapt from those who quit. You don't need to feel ready to begin.",
-      assignment: "Take the part of your missing 30% that scares you most and schedule one small action on it this week.",
+      id: "mindset", name: "MINDSET", title: "70% is enough to start when you know what's missing.", description: "What don't you know about yourself yet?",
       questions: [
-        L("When I fail or receive criticism, I view it as data to learn from, not a reflection of my worth."),
-        L("I can take meaningful action despite feeling uncertain or unqualified."),
-        L("I consistently choose progress and iteration over waiting for the perfect moment."),
-        T("What's in your missing 30%? Name up to three things.", "What you don't know yet, or know you avoid")
+        L("mindset-q1", "Last month, when I hit something I didn't know how to do, I named what I didn't know and took a concrete step to learn it."),
+        L("mindset-q2", "Last month, I asked for feedback on something I was avoiding and stayed open long enough to hear it."),
+        L("mindset-q3", "Last month, I noticed an assumption or blind spot in how I was approaching this and changed what I did next."),
+        T("mindset-missing", "What's in your missing 30%? Name up to three things.", "Write the thing you'd least like to admit."),
       ]
     },
     {
-      title: "Capacity",
-      fullTitle: "Commitment & Capacity",
-      description: "Wanting to be a founder isn't enough. Do you actually have the time, energy, and financial runway to pursue this?",
-      assignment: "Run a 30-day founder experiment: live the schedule your time audit says you'd need before you commit years.",
+      id: "capacity", name: "CAPACITY", title: "Capacity is five accounts, not one.", description: "You can be rich in one and bankrupt in another.",
       questions: [
-        C("In the last 30 days, how many hours a week did you actually spend on your venture?", [["0 to 5", 1], ["5 to 10", 2], ["10 to 20", 4], ["20 or more", 5]]),
-        C("How many months of personal expenses could you cover with no income?", [["Under 3", 1], ["3 to 6", 3], ["6 to 12", 4], ["12 or more", 5]]),
-        L("I want the outcome enough to endure the difficult, unglamorous work of getting there.")
+        account("capacity-time", "Time", "Looking at last month, how much usable time did you actually have for building after work, care, and life commitments?"),
+        account("capacity-energy", "Energy", "Last month, how much energy did you actually have left for founder work after your existing responsibilities?"),
+        account("capacity-money", "Money", "Based on last month's income and expenses, how much financial room did you have to work on this without risking essentials?"),
+        account("capacity-emotional", "Emotional bandwidth", "Last month, how much room did you have for uncertainty, setbacks, and difficult decisions?"),
+        account("capacity-people", "People who depend on you", "Last month, how workable was your plan for meeting their needs while building?"),
+        choice("capacity-hours", "How many hours did you actually spend on your venture last month?", [["0–10", "0-10"], ["11–40", "11-40"], ["41–80", "41-80"], ["81–120", "81-120"], ["120+", "120+"]]),
+        choice("capacity-runway", "At your current personal expenses, how many months could you cover essentials with no income?", [["Less than 1", "lt-1"], ["1–3", "1-3"], ["4–6", "4-6"], ["7–12", "7-12"], ["12+", "12+"]]),
+        choice("capacity-owner", "When work shows up with no clear owner, who takes it?", [["I take it by default", "me-default"], ["I choose to take it", "me-choice"], ["We decide together", "together"], ["Someone else takes it", "someone-else"], ["It stays unowned", "unowned"], ["This hasn't happened", "not-happened"]]),
+        T("capacity-reflection", "What from this section belongs in your missing 30%?")
       ]
     },
     {
-      title: "Support Systems",
-      fullTitle: "Founder Support Systems",
-      description: "No founder builds alone. The quality of your support network directly impacts your odds of success.",
-      assignment: "Fill one empty seat this month: a mentor, a peer founder, or someone who will tell you the truth.",
-      questions: [
-        L("I have at least one mentor or advisor who has been through the entrepreneurial journey and can provide guidance."),
-        L("I'm part of, or actively building, a peer community of other founders or aspiring entrepreneurs."),
-        C("The last time someone gave me direct, critical feedback on my venture was...", [["This month", 5], ["This quarter", 4], ["This year", 2], ["Never", 1]])
-      ]
+      id: "people", name: "PEOPLE + SUPPORT", title: "Who's coming with you, and have you validated the relationship?", description: "Your missing 30% is a team sport.",
+      partnerStatus: choice("partner-status", "Do you have a co-founder or key partner with equity or a defined role?", [["Yes", "yes"], ["Not yet", "not-yet"]]),
+      partnerWithPartner: [
+        scoredChoice("partner-equity", "Does equity follow role and actual contribution, not friendship, hours, or intention?", [["Yes", "yes", 5], ["Partly", "partly", 3], ["Not yet", "not-yet", 1], ["Not applicable", "na", null]]),
+        scoredChoice("partner-roles", "Have you defined each person's role in writing?", [["Yes", "yes", 5], ["Partly", "partly", 3], ["Not yet", "not-yet", 1], ["Not applicable", "na", null]]),
+        scoredChoice("partner-leadership", "Have you defined what leadership looks like for each role?", [["Yes", "yes", 5], ["Partly", "partly", 3], ["Not yet", "not-yet", 1], ["Not applicable", "na", null]]),
+        scoredChoice("partner-growth", "Have you agreed on what happens if someone doesn't grow into their role?", [["Yes", "yes", 5], ["Partly", "partly", 3], ["Not yet", "not-yet", 1], ["Not applicable", "na", null]]),
+        scoredChoice("partner-vesting", "Is there a vesting schedule, and do you know how it protects you if someone steps back?", [["Yes", "yes", 5], ["Partly", "partly", 3], ["Not yet", "not-yet", 1], ["Not applicable", "na", null]]),
+        scoredChoice("partner-fit", "Have you validated that this person is truly a good fit, not just someone you trust?", [["Yes", "yes", 5], ["Partly", "partly", 3], ["Not yet", "not-yet", 1], ["Not applicable", "na", null]]),
+        scoredChoice("partner-accountability", "How did you hold them accountable to commitments last month?", [["Yes", "yes", 5], ["Partly", "partly", 3], ["Not yet", "not-yet", 1], ["Not applicable", "na", null]])
+      ],
+      partnerSolo: [
+        scoredChoice("partner-fit-solo", "Have you validated that the people you plan to bring in are the right fit, not just people you trust?", [["Yes", "yes", 5], ["Partly", "partly", 3], ["Not yet", "not-yet", 1]]),
+        scoredChoice("partner-needs-solo", "Have you defined what you'll need from a co-founder or key partner before bringing one in?", [["Yes", "yes", 5], ["Partly", "partly", 3], ["Not yet", "not-yet", 1]])
+      ],
+      supportMap: ["Co-founder", "Advisor", "Mentor", "Peer founder", "Accountability partner", "Home support", "Truth-teller"].map((seat) => choice(`support-${seat.toLowerCase().replace(/[^a-z]+/g, "-")}`, `${seat}: is this seat filled, partly filled, or empty?`, [["Filled", "filled", 5], ["Partly filled", "partly", 3], ["Empty", "empty", 1]], { scoreMap: true })),
+      reflection: T("people-reflection", "What from this section belongs in your missing 30%?")
     },
     {
-      title: "Co-Founder Fit",
-      fullTitle: "Co-Founder Alignment",
-      description: "Co-founder breakups kill more startups than bad ideas. Whether solo or paired, clarity here is essential.",
-      assignment: "Before anyone gets equity, write down their role, what leadership looks like in it, and what happens if they don't grow into it.",
+      id: "sustainability", name: "SUSTAINABILITY", title: "Can you build this without destroying yourself?", description: "The founder is infrastructure, not a flexible resource. Failure is data, not identity.",
       questions: [
-        C("Roles, equity, and vesting for everyone involved are written down.", [["Yes", 5], ["Partly", 3], ["No", 1], ["No co-founder yet", null]]),
-        C("Everyone holding equity is contributing at a level that matches their share.", [["Yes", 5], ["Mostly", 4], ["Not sure", 2], ["No", 1], ["No one else holds equity", null]]),
-        L("I know how I handle conflict and have a clear process for navigating disagreement with a partner.")
-      ]
-    },
-    {
-      title: "Well-Being",
-      fullTitle: "Founder Well-Being & Sustainability",
-      description: "The founder is the company's most important asset. Neglecting yourself is not a badge of honor; it's a liability.",
-      assignment: "Write down your three burnout warning signs and one thing you'll do when you notice each one.",
-      questions: [
-        L("I consistently get the sleep I need to perform at my best."),
-        L("I know my warning signs for burnout and have strategies to recover before it becomes a crisis."),
-        L("I can set and hold boundaries around my time and energy, even when things get hectic.")
-      ]
-    },
-    {
-      title: "Resilience",
-      fullTitle: "Resilience & Failure",
-      description: "Things will go wrong. Your ability to recover and keep moving is more important than avoiding failure.",
-      assignment: "Write about one setback you recovered from and what it taught you. Keep it as evidence that you can do hard things.",
-      questions: [
-        L("I have real examples from my life where I bounced back from a significant setback and grew from it."),
-        L("I can treat failure as data and reflect on what went wrong without spiraling into self-blame."),
-        L("I can maintain forward momentum even when results are disappointing or timelines slip.")
-      ]
-    },
-    {
-      title: "Leadership",
-      fullTitle: "Leadership & Decision-Making",
-      description: "Founders are decision-making machines. Leading yourself and others under uncertainty is a learnable skill.",
-      assignment: "Write down your top three values and use them to make one decision you've been putting off.",
-      questions: [
-        L("I can make decisions quickly with incomplete information; I don't wait for certainty before acting."),
-        L("I hold myself accountable to my commitments and can model that accountability for others."),
-        L("My values are clear enough that I can use them as a filter when making hard calls under pressure.")
-      ]
-    },
-    {
-      title: "Daily Rhythm",
-      fullTitle: "Building a Founder Rhythm",
-      description: "Entrepreneurship is a marathon, not a sprint. The daily and weekly rhythms you build now will sustain you for years.",
-      assignment: "Block 30 minutes every Friday for a weekly review: what worked, what didn't, and one win to celebrate.",
-      questions: [
-        L("I have a regular reflection practice, like journaling or weekly reviews, that helps me stay intentional."),
-        L("I celebrate small wins and milestones; I don't just keep moving the goalposts without acknowledgment."),
-        L("I actively invest in my own learning and development on a consistent, ongoing basis.")
+        L("sustain-sleep", "Last month, I protected the sleep I need often enough to function well."),
+        L("sustain-energy", "Last month, I noticed when my energy was dropping and adjusted my workload or recovery before I hit a wall."),
+        L("sustain-boundaries", "Last month, I held a boundary on my time or availability when work tried to expand into it."),
+        L("sustain-delegation", "Last month, I asked for help or handed off work someone else could own instead of carrying it all myself."),
+        L("sustain-resilience", "After a setback last month, I looked for evidence about what to change in the path rather than treating it as evidence about my worth."),
+        T("sustain-care", "Who takes care of you?", "Who specifically showed up for you last month, and what did they do?"),
+        T("sustain-reflection", "What from this section belongs in your missing 30%?")
       ]
     }
   ];
 
-  // Workshop sections, in the order you teach them. Leadership and Daily Rhythm
-  // are left out of the live session and saved for the 30-day retake.
-  const SECTIONS = [
-    { id: "why", name: "Founder Why", modules: [0] },
-    { id: "reality", name: "Reality & Mindset", modules: [1, 2] },
-    { id: "capacity", name: "Commitment & Capacity", modules: [3] },
-    { id: "support", name: "Support & Sustainability", modules: [4, 5, 6, 7] }
+  const RETAKE_MODULES = [
+    { id: "leadership", title: "Leadership", fullTitle: "Leadership & Decision-Making", questions: [
+      L("leadership-q1", "Last month, when I had incomplete information, I made a decision and acted without waiting for certainty."),
+      L("leadership-q2", "Last month, I followed through on a commitment and owned it when I didn't."),
+      L("leadership-q3", "Last month, I used my values to make or explain a difficult decision.")
+    ] },
+    { id: "daily-rhythm", title: "Daily Rhythm", fullTitle: "Building a Founder Rhythm", questions: [
+      L("rhythm-q1", "Last month, I used a regular reflection practice to decide what to do next."),
+      L("rhythm-q2", "Last month, I acknowledged a small win instead of immediately moving the goalposts."),
+      L("rhythm-q3", "Last month, I made time to learn something and applied it.")
+    ] }
   ];
 
   const PROFILES = [
@@ -197,7 +164,7 @@
       .fr-copy{margin:0;color:#B9B2A0;font-size:14px;line-height:1.7}
       .fr-gate{max-width:480px;margin:auto;text-align:center}
       .fr-form{display:flex;gap:10px;margin-top:28px}
-      .fr-code{min-width:0;flex:1;padding:13px 14px;border:1px solid rgba(198,161,91,.38);border-radius:6px;background:rgba(255,255,255,.04);color:#F5F0E3;font:inherit;font-size:14px}
+      .fr-code{min-width:0;flex:1;padding:13px 14px;border:1px solid rgba(198,161,91,.38);border-radius:6px;background:rgba(255,255,255,.04);color:#F5F0E3;font:inherit;font-size:16px}
       .fr-code::placeholder{color:#B9B2A0}
       .fr-error{min-height:1.4em;margin:10px 0 0;color:#E3CD9A;font-size:12px;text-align:left}
       .fr-button{border:1px solid #C6A15B;border-radius:6px;padding:12px 18px;background:#C6A15B;color:#0A1220;font:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s ease,border-color .2s ease}
@@ -206,6 +173,10 @@
       .fr-progress-label{display:flex;justify-content:space-between;gap:12px;margin-bottom:8px;color:#B9B2A0;font-size:12px}
       .fr-progress-track{height:4px;overflow:hidden;background:rgba(245,240,227,.13)}
       .fr-progress-fill{height:100%;background:#C6A15B;transition:width .3s ease}
+      .fr-slider-label{display:flex;justify-content:space-between;gap:12px;margin:22px 0 8px;color:#F5F0E3;font-size:13px;font-weight:600}
+      .fr-slider-label output{color:#E3CD9A;font-variant-numeric:tabular-nums}
+      .fr-slider{width:100%;height:28px;margin:0;accent-color:#C6A15B;cursor:pointer}
+      .fr-slider-limits{margin:0;color:#B9B2A0;font-size:11px;font-weight:400}
       .fr-module{margin:26px 0 20px;padding:22px 24px;border:1px solid rgba(198,161,91,.28);border-radius:8px;background:rgba(255,255,255,.025)}
       .fr-module h2{margin:0 0 8px;color:#F5F0E3;font-family:'Fraunces',Georgia,serif;font-size:25px;font-weight:500;line-height:1.2}
       .fr-module p{margin:0;color:#B9B2A0;font-size:13px;line-height:1.65}
@@ -252,7 +223,7 @@
       .fr-pct-choice b{margin:0;font-size:15px}
       .fr-choice-list{display:grid;gap:8px}
       .fr-choice-row{min-height:48px;padding:12px 16px;text-align:left;font-size:13px}
-      .fr-text{width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(198,161,91,.3);border-radius:6px;background:rgba(255,255,255,.04);color:#F5F0E3;font:inherit;font-size:14px;line-height:1.5;resize:vertical}
+      .fr-text{width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(198,161,91,.3);border-radius:6px;background:rgba(255,255,255,.04);color:#F5F0E3;font:inherit;font-size:16px;line-height:1.5;resize:vertical}
       .fr-text::placeholder{color:#8F8A7C}
       .fr-text:focus-visible{outline:2px solid #E3CD9A;outline-offset:2px}
       .fr-hint-left{text-align:left;margin-top:8px}
@@ -339,57 +310,102 @@
     const closeButton = overlay.querySelector(".fr-close");
 
     const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-    const scored = (q) => q.type !== "text";
     let code = null;
     let mode = "self";
     let flow = [];
     let state = null;
+    let attemptStore = { schemaVersion: 3, currentAttemptId: null, attempts: [] };
 
-    function freshState() {
-      return { step: 0, answers: {}, unlocked: {}, felt: null, sent: false, name: "", email: "" };
+    function newId() {
+      return globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     }
-    function storageKey() { return `fr-state-v2-${code}`; }
+    function storageKey() { return `fr-attempts-v3-${code}`; }
+    function readAttemptStore() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(storageKey()) || "null");
+        if (parsed?.schemaVersion === 3 && Array.isArray(parsed.attempts)) return parsed;
+      } catch (e) { /* storage unavailable or invalid */ }
+      return { schemaVersion: 3, currentAttemptId: null, attempts: [] };
+    }
+    function freshState({ name = "", email = "", retake = false, baselinePct = null } = {}) {
+      return {
+        attemptId: newId(), createdAt: new Date().toISOString(), step: 0, answers: {}, unlocked: {},
+        startingNumber: null, baselinePct, retake, sent: false, name, email, completedAt: null, scorePct: null
+      };
+    }
     function save() {
-      try { localStorage.setItem(storageKey(), JSON.stringify(state)); } catch (e) { /* storage unavailable */ }
+      if (!state) return;
+      const index = attemptStore.attempts.findIndex((attempt) => attempt.attemptId === state.attemptId);
+      if (index < 0) attemptStore.attempts.push(state);
+      else attemptStore.attempts[index] = state;
+      attemptStore.currentAttemptId = state.attemptId;
+      try { localStorage.setItem(storageKey(), JSON.stringify(attemptStore)); } catch (e) { /* storage unavailable */ }
     }
-    function load() {
-      try { const raw = localStorage.getItem(storageKey()); return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
-    }
-
     function buildFlow() {
       const steps = [{ type: "details" }, { type: "checkin" }];
-      if (mode === "workshop") {
-        SECTIONS.forEach((section, sectionIndex) => {
-          steps.push({ type: "hold", id: section.id, sectionIndex });
-          section.modules.forEach((m) => steps.push({ type: "module", m, sectionIndex }));
-        });
-        steps.push({ type: "hold", id: "results" });
-      } else {
-        MODULES.forEach((_, m) => steps.push({ type: "module", m }));
-      }
+      SECTIONS.forEach((section) => {
+        steps.push({ type: "hold", id: section.id });
+        steps.push({ type: "section", id: section.id });
+      });
+      if (state?.retake) RETAKE_MODULES.forEach((module) => steps.push({ type: "retakeModule", id: module.id }));
+      steps.push({ type: "hold", id: "results" });
       steps.push({ type: "results" });
       return steps;
     }
-    const activeModules = () => flow.filter((s) => s.type === "module").map((s) => s.m);
-
-    function questionScore(m, qi) {
-      const q = MODULES[m].questions[qi];
-      const a = state.answers[`${m}-${qi}`];
-      if (a === undefined || a === null || a === "") return null;
-      if (q.type === "likert") return a;
-      if (q.type === "choice") return q.options[a][1];
+    function sectionQuestions(section) {
+      if (section.id !== "people") return section.questions;
+      const partnerQuestions = state.answers["partner-status"] === "yes" ? section.partnerWithPartner : section.partnerSolo;
+      return [section.partnerStatus, ...partnerQuestions, ...section.supportMap, section.reflection];
+    }
+    function findQuestion(id) {
+      for (const section of SECTIONS) {
+        const match = sectionQuestions(section).find((question) => question.id === id);
+        if (match) return match;
+      }
+      for (const module of RETAKE_MODULES) {
+        const match = module.questions.find((question) => question.id === id);
+        if (match) return match;
+      }
       return null;
     }
-    function moduleScore(m) {
-      let got = 0, max = 0;
-      MODULES[m].questions.forEach((q, qi) => {
-        const s = questionScore(m, qi);
-        if (s !== null) { got += s; max += 5; }
-      });
-      return max ? Math.round((got / max) * 100) : null;
+    function answerScore(question) {
+      const answer = state.answers[question.id];
+      if (answer === undefined || answer === null || answer === "") return null;
+      if (question.type === "likert" || question.type === "capacity") return Number(answer);
+      if (question.type === "choice" && question.scored) {
+        return question.options.find((option) => option.value === answer)?.score ?? null;
+      }
+      return null;
     }
-    function moduleComplete(m) {
-      return MODULES[m].questions.every((q, qi) => !scored(q) || state.answers[`${m}-${qi}`] !== undefined);
+    function averageScore(questions) {
+      const scores = questions.map(answerScore).filter((score) => score !== null);
+      return scores.length ? Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length / 5 * 100) : null;
+    }
+    function supportMapScore(section) {
+      return averageScore(section.supportMap.map((question) => ({ ...question, scored: true, type: "choice" })));
+    }
+    function sectionScore(section) {
+      const questions = sectionQuestions(section).filter((question) => question.scored);
+      return averageScore(questions) ?? (section.id === "people" ? supportMapScore(section) : null);
+    }
+    function retakeModuleScore(module) {
+      return averageScore(module.questions);
+    }
+    function questionComplete(question) {
+      if (!question.required) return true;
+      const answer = state.answers[question.id];
+      if (question.type === "multi") return Array.isArray(answer) && answer.length > 0;
+      return answer !== undefined && answer !== null && answer !== "";
+    }
+    function sectionComplete(section) {
+      return sectionQuestions(section).every(questionComplete);
+    }
+    function beginAttempt(options = {}) {
+      state = freshState(options);
+      attemptStore.attempts.push(state);
+      attemptStore.currentAttemptId = state.attemptId;
+      flow = buildFlow();
+      save();
     }
 
     function renderGate(message = "") {
@@ -430,26 +446,28 @@
     }
 
     function renderCheckin() {
-      const options = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((v) =>
-        `<button class="fr-choice fr-pct-choice" type="button" data-action="felt" data-value="${v}" aria-pressed="${state.felt === v}"><b>${v}%</b></button>`).join("");
+      const baseline = state.baselinePct === null ? "" : `<p class="fr-hint">Your last completed score of ${state.baselinePct}% is saved as this retake's baseline.</p>`;
       body.innerHTML = `
         ${progressHeader("Before we begin")}
         <div class="fr-module"><h2 id="fr-dialog-title">How ready do you feel?</h2><p>Go with your gut. As a percentage, how ready do you feel to be a founder right now? You'll see how this compares to your score at the end.</p></div>
-        <div class="fr-pct" aria-label="Choose a percentage">${options}</div>
+        ${baseline}
+        <label class="fr-slider-label" for="fr-starting-number"><span>Your starting number</span><output id="fr-starting-output">${state.startingNumber === null ? "Choose 0–100%" : `${state.startingNumber}%`}</output></label>
+        <input class="fr-slider" id="fr-starting-number" type="range" min="0" max="100" step="5" value="${state.startingNumber ?? 50}" aria-label="Starting readiness percentage">
+        <div class="fr-slider-label fr-slider-limits"><span>0%</span><span>100%</span></div>
         <nav class="fr-nav" aria-label="Assessment navigation">
           <button class="fr-button fr-back" type="button" data-action="back">Back</button>
-          <button class="fr-button" type="button" data-action="next" ${state.felt ? "" : "disabled"}>Continue</button>
+          <button class="fr-button" type="button" data-action="next" ${state.startingNumber === null ? "disabled" : ""}>Continue</button>
         </nav>`;
     }
 
     function renderHold(step, message = "") {
       const isResults = step.id === "results";
-      const section = isResults ? null : SECTIONS[step.sectionIndex];
+      const section = isResults ? null : SECTIONS.find((item) => item.id === step.id);
       const title = isResults ? "Your results are next" : `Next: ${section.name}`;
       const copy = isResults
         ? "Hold here. We'll reveal results together at the end. Enter the word on screen when it's time."
         : "Hold here. We'll open this section together when we get to it. Enter the word on screen to continue.";
-      const label = isResults ? "All sections complete" : `Section ${step.sectionIndex + 1} of ${SECTIONS.length}`;
+      const label = isResults ? "All sections complete" : `Section ${SECTIONS.indexOf(section) + 1} of ${SECTIONS.length}`;
       body.innerHTML = `
         ${progressHeader(label)}
         <div class="fr-gate fr-hold">
@@ -465,65 +483,151 @@
         </div>`;
     }
 
-    function renderQuestion(m, q, qi) {
-      const key = `${m}-${qi}`;
-      const selected = state.answers[key];
-      const title = `<h3 class="fr-question-title" id="fr-q-${key}"><span class="fr-number">${qi + 1}</span>${esc(q.text)}</h3>`;
-      if (q.type === "text") {
-        return `<section class="fr-question" aria-labelledby="fr-q-${key}">${title}<textarea class="fr-text" data-question="${key}" rows="3" placeholder="${esc(q.placeholder)}">${esc(selected || "")}</textarea><p class="fr-hint fr-hint-left">Optional. Only you see this.</p></section>`;
+    function renderQuestion(question, index) {
+      const selected = state.answers[question.id];
+      const title = `<h3 class="fr-question-title" id="fr-q-${esc(question.id)}"><span class="fr-number">${index + 1}</span>${esc(question.text)}</h3>`;
+      if (question.type === "text") {
+        return `<section class="fr-question" aria-labelledby="fr-q-${esc(question.id)}">${title}<textarea class="fr-text" data-question="${esc(question.id)}" rows="3" placeholder="${esc(question.placeholder)}">${esc(selected || "")}</textarea>${question.placeholder ? `<p class="fr-hint fr-hint-left">${esc(question.placeholder)}</p>` : ""}<p class="fr-hint fr-hint-left">Optional. Your answer is included in your report.</p></section>`;
       }
-      let choices;
-      if (q.type === "choice") {
-        choices = `<div class="fr-choice-list">${q.options.map(([label], oi) =>
-          `<button class="fr-choice fr-choice-row" type="button" data-action="answer" data-question="${key}" data-value="${oi}" aria-pressed="${selected === oi}">${esc(label)}</button>`).join("")}</div>`;
-      } else {
-        choices = `<div class="fr-options" aria-label="Choose a response">${LABELS.map((label, index) => {
-          const value = index + 1;
-          return `<button class="fr-choice" type="button" data-action="answer" data-question="${key}" data-value="${value}" aria-pressed="${selected === value}" aria-label="${value}, ${label}"><b>${value}</b>${label}</button>`;
-        }).join("")}</div>`;
+      if (question.type === "capacity") {
+        const levels = ["Almost none", "Very little", "Some", "Enough", "Plenty"];
+        return `<section class="fr-question" aria-labelledby="fr-q-${esc(question.id)}">${title}<div class="fr-options">${levels.map((label, i) => `<button class="fr-choice" type="button" data-action="answer" data-question="${esc(question.id)}" data-value="${i + 1}" aria-pressed="${selected === i + 1}"><b>${i + 1}</b>${label}</button>`).join("")}</div></section>`;
       }
-      return `<section class="fr-question" aria-labelledby="fr-q-${key}">${title}${choices}</section>`;
+      if (question.type === "multi") {
+        const selectedValues = Array.isArray(selected) ? selected : [];
+        return `<section class="fr-question" aria-labelledby="fr-q-${esc(question.id)}">${title}<div class="fr-choice-list">${question.options.map((option) => `<button class="fr-choice fr-choice-row" type="button" data-action="multi" data-question="${esc(question.id)}" data-value="${esc(option.value)}" aria-pressed="${selectedValues.includes(option.value)}">${esc(option.label)}</button>`).join("")}</div></section>`;
+      }
+      if (question.type === "choice") {
+        return `<section class="fr-question" aria-labelledby="fr-q-${esc(question.id)}">${title}<div class="fr-choice-list">${question.options.map((option) => `<button class="fr-choice fr-choice-row" type="button" data-action="answer" data-question="${esc(question.id)}" data-value="${esc(option.value)}" aria-pressed="${selected === option.value}">${esc(option.label)}</button>`).join("")}</div></section>`;
+      }
+      if (question.type === "likert") {
+        return `<section class="fr-question" aria-labelledby="fr-q-${esc(question.id)}">${title}<div class="fr-options">${LABELS.map((label, i) => `<button class="fr-choice" type="button" data-action="answer" data-question="${esc(question.id)}" data-value="${i + 1}" aria-pressed="${selected === i + 1}" aria-label="${i + 1}, ${label}"><b>${i + 1}</b>${label}</button>`).join("")}</div></section>`;
+      }
+      return "";
     }
 
     function renderModule(step) {
-      const m = step.m;
-      const module = MODULES[m];
-      const complete = moduleComplete(m);
+      const isSection = step.type === "section";
+      const section = isSection ? SECTIONS.find((item) => item.id === step.id) : null;
+      const module = isSection ? null : RETAKE_MODULES.find((item) => item.id === step.id);
+      const questions = isSection ? sectionQuestions(section) : module.questions;
+      const complete = isSection ? sectionComplete(section) : questions.every(questionComplete);
       const next = flow[state.step + 1];
       const nextLabel = next.type === "results" ? "See my results" : next.type === "hold" ? "Finish section" : "Next";
-      const label = mode === "workshop" ? `Section ${step.sectionIndex + 1} of ${SECTIONS.length}: ${SECTIONS[step.sectionIndex].name}` : `Module ${activeModules().indexOf(m) + 1} of ${activeModules().length}`;
-      const required = module.questions.filter(scored).length;
+      const label = isSection ? `Section ${SECTIONS.indexOf(section) + 1} of ${SECTIONS.length}: ${section.name}` : `30-day retake: ${module.title}`;
+      const scoredCount = questions.filter((question) => question.scored).length;
       body.innerHTML = `
         ${progressHeader(label)}
-        <div class="fr-module"><h2 id="fr-dialog-title">${esc(module.fullTitle)}</h2><p>${esc(module.description)}</p></div>
-        ${module.questions.map((q, qi) => renderQuestion(m, q, qi)).join("")}
+        <div class="fr-module"><h2 id="fr-dialog-title">${esc(isSection ? section.name : module.fullTitle)}</h2><p>${esc(isSection ? section.description : "This module was not covered in the workshop. Answer based on what you actually did last month.")}</p></div>
+        ${questions.map(renderQuestion).join("")}
         <nav class="fr-nav" aria-label="Assessment navigation">
           <button class="fr-button fr-back" type="button" data-action="back">Back</button>
           <button class="fr-button" type="button" data-action="next" ${complete ? "" : "disabled"}>${nextLabel}</button>
         </nav>
-        ${complete ? "" : `<p class="fr-hint">Answer all ${required} rated questions to continue.</p>`}`;
+        ${complete ? "" : `<p class="fr-hint">Complete the ${scoredCount} scored questions and required selections to continue.</p>`}`;
     }
 
-    function coachingLink(subject) {
-      if (BOOKING_URL) return BOOKING_URL;
-      return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}`;
+    function bookingLink() {
+      return BOOKING_URL || `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Founder readiness session")}`;
     }
-
-    function resultPayload(report) {
+    function frameworkLink() {
+      return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("The Venture Validation Framework")}`;
+    }
+    function answerLabel(question, value) {
+      if (question.type === "multi") return question.options.filter((option) => value?.includes(option.value)).map((option) => option.label);
+      if (question.type === "choice") return question.options.find((option) => option.value === value)?.label ?? value;
+      return value;
+    }
+    function answerRecord(question) {
+      const value = state.answers[question.id];
+      if (value === undefined || value === "" || value === null) return null;
+      return { id: question.id, type: question.type, question: question.text, answer: answerLabel(question, value) };
+    }
+    function calculateReport() {
+      const sectionScores = SECTIONS.map((section) => ({ id: section.id, title: section.name, pct: sectionScore(section) }));
+      const retakeScores = state.retake ? RETAKE_MODULES.map((module) => ({ id: module.id, title: module.title, pct: retakeModuleScore(module) })) : [];
+      const dimensions = [...sectionScores, ...retakeScores].filter((item) => item.pct !== null);
+      const totalPct = Math.round(sectionScores.reduce((sum, item) => sum + item.pct, 0) / sectionScores.length);
+      const sorted = [...sectionScores].sort((a, b) => a.pct - b.pct);
+      const profile = PROFILES.find((item) => totalPct >= item.min);
+      const capacitySection = SECTIONS.find((section) => section.id === "capacity");
+      const capacityAccounts = capacitySection.questions.filter((question) => question.type === "capacity").map((question) => ({
+        id: question.id, name: question.account, score: state.answers[question.id] ?? null
+      }));
+      const lowestCapacity = [...capacityAccounts].filter((item) => item.score !== null).sort((a, b) => a.score - b.score)[0] || null;
+      const people = SECTIONS.find((section) => section.id === "people");
+      const partnerQuestions = sectionQuestions(people).filter((question) => question.scored);
+      const partnerGaps = partnerQuestions.filter((question) => {
+        const value = state.answers[question.id];
+        return value !== undefined && value !== "na" && value !== "yes";
+      }).map((question) => ({ id: question.id, question: question.text, answer: answerLabel(question, state.answers[question.id]) }));
+      const supportMap = people.supportMap.map((question) => ({ seat: question.text.split(":")[0], status: answerLabel(question, state.answers[question.id]) || "" }));
+      const sectionAnswers = SECTIONS.map((section) => ({
+        id: section.id,
+        title: section.name,
+        scorePct: sectionScore(section),
+        answers: sectionQuestions(section).map(answerRecord).filter(Boolean)
+      }));
+      const reflections = Object.fromEntries(SECTIONS.map((section) => {
+        const reflectionQuestion = section.id === "mindset"
+          ? { id: "mindset-missing" }
+          : section.id === "people" ? section.reflection : section.questions.find((question) => question.id.endsWith("-reflection"));
+        return [section.id, state.answers[reflectionQuestion.id] || ""];
+      }));
+      const focus = [...sorted].slice(0, 2);
+      const strengths = [...sorted].slice(-2).reverse();
+      const gapFromStarting = totalPct - state.startingNumber;
+      const gapFromBaseline = state.baselinePct === null ? null : totalPct - state.baselinePct;
       return {
-        code, mode,
-        name: state.name, email: state.email,
-        felt: state.felt, score: report.totalPct, gap: report.gap,
-        profile: report.profile.label, summary: report.profile.summary, next: report.profile.next,
-        assignmentTitle: MODULES[report.lowest.m].title, assignment: MODULES[report.lowest.m].assignment,
-        coachingUrl: coachingLink(`Coaching: ${MODULES[report.lowest.m].title}`),
-        frameworkUrl: coachingLink("The Venture Validation Framework"),
-        modules: report.scores.map(({ m, pct }) => ({ title: MODULES[m].title, fullTitle: MODULES[m].fullTitle, pct })),
-        strengths: report.strongest.map(({ m }) => MODULES[m].title),
-        focus: report.focus.map(({ m }) => MODULES[m].title),
-        why: state.answers["0-3"] || "", missing: state.answers["2-3"] || "",
-        retake: mode === "workshop",
-        submittedAt: new Date().toISOString()
+        totalPct, profile, dimensions, sectionScores, retakeScores, focus, strengths,
+        capacityAccounts, lowestCapacity, partnerStatus: state.answers["partner-status"] || "",
+        partnerGaps, supportMap, emptySupportSeats: supportMap.filter((seat) => seat.status === "Empty").map((seat) => seat.seat),
+        sectionAnswers, reflections, firstAssignment: state.answers["mindset-missing"] || "",
+        gapFromStarting, gapFromBaseline
+      };
+    }
+    function resultPayload(report) {
+      const capacitySection = SECTIONS.find((section) => section.id === "capacity");
+      const peopleSection = SECTIONS.find((section) => section.id === "people");
+      return {
+        schemaVersion: 3,
+        attemptId: state.attemptId,
+        mode: state.retake ? "retake" : "workshop",
+        name: state.name,
+        email: state.email,
+        startingNumberPct: state.startingNumber,
+        baselineScorePct: state.baselinePct,
+        finalScorePct: report.totalPct,
+        gapFromStartingNumberPct: report.gapFromStarting,
+        gapFromBaselinePct: report.gapFromBaseline,
+        profile: { label: report.profile.label, summary: report.profile.summary, nextStep: report.profile.next },
+        sectionScores: report.sectionScores,
+        sectionAnswers: report.sectionAnswers,
+        retakeModuleScores: report.retakeScores,
+        strengths: report.strengths.map((item) => item.title),
+        focusAreas: report.focus.map((item) => item.title),
+        capacity: {
+          inventory: report.capacityAccounts,
+          constraint: report.lowestCapacity,
+          hoursLastMonth: answerLabel(capacitySection.questions.find((question) => question.id === "capacity-hours"), state.answers["capacity-hours"]),
+          runwayMonths: answerLabel(capacitySection.questions.find((question) => question.id === "capacity-runway"), state.answers["capacity-runway"]),
+          unownedWorkResponse: answerLabel(capacitySection.questions.find((question) => question.id === "capacity-owner"), state.answers["capacity-owner"]),
+          homework: "30-Day Experiment: Live the schedule your audit says you'll need for 30 days before committing years."
+        },
+        partner: {
+          status: report.partnerStatus,
+          validationAnswers: sectionQuestions(peopleSection).filter((question) => question.scored).map(answerRecord).filter(Boolean),
+          unvalidatedItems: report.partnerGaps
+        },
+        supportMap: report.supportMap,
+        emptySupportSeats: report.emptySupportSeats,
+        sectionReflections: report.reflections,
+        firstAssignment: report.firstAssignment,
+        retakeModuleAnswers: state.retake ? RETAKE_MODULES.map((module) => ({ id: module.id, title: module.title, answers: module.questions.map(answerRecord).filter(Boolean) })) : [],
+        bookingUrl: bookingLink(),
+        frameworkUrl: frameworkLink(),
+        submittedAt: new Date().toISOString(),
+        completedAt: state.completedAt
       };
     }
     function send(payload) {
@@ -532,54 +636,54 @@
         .then(() => true).catch(() => false);
     }
 
-    function renderResults(notice = "") {
-      const mods = activeModules();
-      const scores = mods.map((m) => ({ m, pct: moduleScore(m) })).filter((s) => s.pct !== null);
-      const totalPct = Math.round(scores.reduce((t, s) => t + s.pct, 0) / scores.length);
-      const profile = PROFILES.find((p) => totalPct >= p.min);
-      const sorted = [...scores].sort((a, b) => a.pct - b.pct);
-      const lowest = sorted[0];
-      const focus = sorted.slice(0, 2);
-      const strongest = sorted.slice(-2).reverse();
-      const diff = totalPct - state.felt;
-      let gap;
-      if (diff < -5) gap = `You felt ${state.felt}% ready. You scored ${totalPct}%. That ${Math.abs(diff)}-point gap is your missing piece, and it tells you exactly where to focus.`;
-      else if (diff > 5) gap = `You felt ${state.felt}% ready. You scored ${totalPct}%. You may be more ready than you give yourself credit for.`;
-      else gap = `You felt ${state.felt}% ready. You scored ${totalPct}%. You know yourself well, and that's a founder skill.`;
-
-      const report = { totalPct, gap, profile, lowest, focus, strongest, scores };
-      if (!state.sent) { send(resultPayload(report)); state.sent = true; save(); }
-
-      const rows = scores.map(({ m, pct }) => `<div class="fr-score-row"><div class="fr-score-head"><span>${esc(MODULES[m].fullTitle)}</span><span>${pct}%</span></div><div class="fr-score-track"><span style="width:${pct}%"></span></div></div>`).join("");
-      const missing = state.answers["2-3"];
-      const why = state.answers["0-3"];
-      const reflections = (why || missing) ? `<section class="fr-breakdown"><h3>In your words</h3>${why ? `<p class="fr-reflection"><span>I want to build this because</span>${esc(why)}</p>` : ""}${missing ? `<p class="fr-reflection"><span>My missing 30%</span>${esc(missing)}</p>` : ""}</section>` : "";
-      const retake = mode === "workshop"
-        ? `<section class="fr-result-block"><h3>In 30 days</h3><p>Retake the assessment after your 30-day founder experiment. It adds two modules we didn't cover today: Leadership and Daily Rhythm.</p></section>`
-        : "";
-      const emailNote = RESULTS_ENDPOINT
-        ? `<p class="fr-sent" role="status">Your full report is on its way to ${esc(state.email)}.</p>`
-        : "";
-
+    function renderResults() {
+      const report = calculateReport();
+      state.scorePct = report.totalPct;
+      if (!state.completedAt) state.completedAt = new Date().toISOString();
+      if (!state.sent) {
+        state.sent = true;
+        save();
+        send(resultPayload(report));
+      }
+      const rows = report.dimensions.map((item) => `<div class="fr-score-row"><div class="fr-score-head"><span>${esc(item.title)}</span><span>${item.pct}%</span></div><div class="fr-score-track"><span style="width:${item.pct}%"></span></div></div>`).join("");
+      const reflections = report.sectionAnswers.map((section) => {
+        const items = section.answers.filter((item) => item.id.endsWith("reflection") || item.id === "mindset-missing" || item.id === "why-sentence" || item.id === "why-timing" || item.id === "reality-protect" || item.id === "reality-q3" || item.id === "sustain-care");
+        return items.length ? `<section class="fr-result-block"><h3>${esc(section.title)}</h3>${items.map((item) => `<p class="fr-reflection"><span>${esc(item.question)}</span>${esc(Array.isArray(item.answer) ? item.answer.join(", ") : item.answer)}</p>`).join("")}</section>` : "";
+      }).join("");
+      const emptySeats = report.emptySupportSeats.length ? report.emptySupportSeats.join(", ") : "None";
+      const partnerGaps = report.partnerGaps.length ? report.partnerGaps.map((item) => `<p class="fr-reflection"><span>${esc(item.question)}</span>${esc(item.answer)}</p>`).join("") : "No unvalidated partner items reported.";
+      const startingGap = report.gapFromStarting >= 0 ? `+${report.gapFromStarting}` : `${report.gapFromStarting}`;
+      const baseline = state.baselinePct === null ? "" : `<p class="fr-copy">Change from your previous score baseline (${state.baselinePct}%): ${report.gapFromBaseline >= 0 ? "+" : ""}${report.gapFromBaseline} points.</p>`;
+      const dimensionsLabel = state.retake ? "Six workshop sections plus retake modules" : "Six workshop sections";
+      const assignment = report.firstAssignment || "Choose one item from your missing 30% and make it your first concrete step.";
+      const emailNote = RESULTS_ENDPOINT ? `<p class="fr-sent" role="status">Your full report is on its way to ${esc(state.email)}.</p>` : "";
+      const retakeCopy = state.retake
+        ? "Your 30-day retake includes Leadership and Daily Rhythm, the two modules not covered in the workshop."
+        : `Retake in 30 days with tonight's ${report.totalPct}% score as your baseline. The retake adds Leadership and Daily Rhythm.`;
       body.innerHTML = `
-        <p class="fr-eyebrow">${esc(state.name ? `${state.name}, your founder readiness profile` : "Your founder readiness profile")}</p>
-        <h1 class="fr-title" id="fr-dialog-title">${profile.label}</h1>
-        <div class="fr-result-score"><strong>${totalPct}%</strong><span>overall readiness</span></div>
-        <p class="fr-gap">${gap}</p>
-        <p class="fr-copy">${profile.summary}</p>
-        <section class="fr-result-block"><h3>Your first assignment: ${esc(MODULES[lowest.m].title)}</h3><p>${esc(MODULES[lowest.m].assignment)}</p></section>
+        <p class="fr-eyebrow">${esc(state.name)}, your founder readiness profile</p>
+        <h1 class="fr-title" id="fr-dialog-title">${esc(report.profile.label)}</h1>
+        <div class="fr-result-score"><strong>${report.totalPct}%</strong><span>overall readiness</span></div>
+        <p class="fr-gap">Starting number: ${state.startingNumber}%. Final score: ${report.totalPct}%. Gap: ${startingGap} points.</p>
+        ${baseline}
+        <p class="fr-copy">${esc(report.profile.summary)}</p>
+        <section class="fr-result-block"><h3>Your first assignment: missing 30%</h3><p>${esc(assignment)}</p></section>
+        ${report.lowestCapacity ? `<section class="fr-result-block"><h3>Capacity constraint</h3><p>${esc(report.lowestCapacity.name)} (${report.lowestCapacity.score}/5)</p></section>` : ""}
+        <section class="fr-result-block"><h3>Gaps to fill before you launch</h3><p>${esc(emptySeats)}</p></section>
+        <section class="fr-result-block"><h3>Co-founder / partner items to validate</h3>${partnerGaps}</section>
+        <section class="fr-result-block"><h3>30-Day Experiment</h3><p>Live the schedule your audit says you'll need for 30 days before committing years.</p></section>
         <div class="fr-cta">
-          <a class="fr-button" href="${coachingLink(`Coaching: ${MODULES[lowest.m].title}`)}" target="_blank" rel="noopener">Work with Missy on ${esc(MODULES[lowest.m].title)}</a>
-          <a class="fr-button fr-back" href="${coachingLink("The Venture Validation Framework")}" target="_blank" rel="noopener">Validate the rest of your venture</a>
+          <a class="fr-button" href="${esc(bookingLink())}" target="_blank" rel="noopener">Book a session</a>
+          <a class="fr-button fr-back" href="${esc(frameworkLink())}" target="_blank" rel="noopener">Get the Venture Validation Framework</a>
         </div>
-        <p class="fr-copy fr-next">${profile.next}</p>
+        <p class="fr-copy fr-next">${esc(report.profile.next)}</p>
         ${emailNote}
-        <section class="fr-breakdown"><h3>Readiness by dimension</h3>${rows}</section>
-        <div class="fr-highlights"><section><h3>Your strengths</h3>${strongest.map(({ m }) => `<p>${esc(MODULES[m].title)}</p>`).join("")}</section><section><h3>Focus areas</h3>${focus.map(({ m }) => `<p>${esc(MODULES[m].title)}</p>`).join("")}</section></div>
+        <section class="fr-breakdown"><h3>Readiness by dimension: ${dimensionsLabel}</h3>${rows}</section>
+        <div class="fr-highlights"><section><h3>Your strengths</h3>${report.strengths.map((item) => `<p>${esc(item.title)}</p>`).join("")}</section><section><h3>Focus areas</h3>${report.focus.map((item) => `<p>${esc(item.title)}</p>`).join("")}</section></div>
         ${reflections}
-        ${retake}
+        <section class="fr-result-block"><h3>In 30 days</h3><p>${esc(retakeCopy)}</p></section>
         <p class="fr-quote">"The biggest risk in entrepreneurship is not that your startup fails. The biggest risk is becoming disconnected from yourself while trying to build it."</p>
-        <nav class="fr-nav" aria-label="Results actions"><button class="fr-button fr-back" type="button" data-action="retake">Start over</button></nav>`;
+        <nav class="fr-nav" aria-label="Results actions"><button class="fr-button fr-back" type="button" data-action="retake">${state.retake ? "Start another attempt" : "Begin 30-day retake"}</button></nav>`;
     }
 
     function render(message = "") {
@@ -587,7 +691,7 @@
       if (step.type === "details") renderDetails(message);
       else if (step.type === "checkin") renderCheckin();
       else if (step.type === "hold") renderHold(step, message);
-      else if (step.type === "module") renderModule(step);
+      else if (step.type === "section" || step.type === "retakeModule") renderModule(step);
       else renderResults(message);
       body.scrollTop = 0;
     }
@@ -640,8 +744,14 @@
         if (!match) { renderGate("That code didn't work. Check it and try again."); return; }
         code = match;
         mode = CODES[match];
-        flow = buildFlow();
-        state = load() || freshState();
+        attemptStore = readAttemptStore();
+        const current = attemptStore.attempts.find((attempt) => attempt.attemptId === attemptStore.currentAttemptId);
+        if (current) {
+          state = JSON.parse(JSON.stringify(current));
+          flow = buildFlow();
+        } else {
+          beginAttempt();
+        }
         if (state.step >= flow.length) state.step = 0;
         render();
       } else if (form === "unlock") {
@@ -668,28 +778,44 @@
       save();
     });
 
+    body.addEventListener("input", (event) => {
+      const slider = event.target.closest(".fr-slider");
+      if (!slider) return;
+      state.startingNumber = Number(slider.value);
+      body.querySelector("#fr-starting-output").textContent = `${state.startingNumber}%`;
+      body.querySelector('[data-action="next"]').disabled = false;
+      save();
+    });
+
     body.addEventListener("click", (event) => {
       const control = event.target.closest("[data-action]");
       if (!control || control.disabled) return;
       const { action } = control.dataset;
-      if (action === "felt") {
-        state.felt = Number(control.dataset.value);
-        save();
-        renderCheckin();
-      } else if (action === "answer") {
+      if (action === "answer") {
         const scrollTop = body.scrollTop;
-        state.answers[control.dataset.question] = Number(control.dataset.value);
+        const question = findQuestion(control.dataset.question);
+        const numeric = question?.type === "likert" || question?.type === "capacity";
+        state.answers[control.dataset.question] = numeric ? Number(control.dataset.value) : control.dataset.value;
         save();
         render();
         body.scrollTop = scrollTop;
+      } else if (action === "multi") {
+        const current = Array.isArray(state.answers[control.dataset.question]) ? state.answers[control.dataset.question] : [];
+        const value = control.dataset.value;
+        let selected = current.includes(value) ? current.filter((item) => item !== value) : [...current, value];
+        if (value === "none" && selected.includes("none")) selected = ["none"];
+        else if (value !== "none") selected = selected.filter((item) => item !== "none");
+        state.answers[control.dataset.question] = selected;
+        save();
+        render();
       } else if (action === "back") {
         go(-1);
       } else if (action === "next") {
         advance();
       } else if (action === "retake") {
         const { name, email } = state;
-        state = { ...freshState(), name, email, step: 1 };
-        save();
+        const baselinePct = calculateReport().totalPct;
+        beginAttempt({ name, email, retake: true, baselinePct });
         render();
       }
     });
