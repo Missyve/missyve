@@ -27,9 +27,9 @@
     {
       id: "why", name: "WHY", title: "Why this? Why you? Why now?", description: "Your why has to survive your real life.",
       questions: [
-        L("why-q1", "Last month, I explained to someone close to me why I want to build this, and my reason held up to their questions."),
-        L("why-q2", "In the last month, I used a strength, skill, or lived experience of mine to make progress on this problem."),
-        L("why-q3", "In the last month, I made room for this work without pretending my real-life responsibilities would disappear."),
+        L("why-q1", "I have explained to someone close to me why I want to build this, and my reason has held up to their questions."),
+        L("why-q2", "I have used a strength, skill, or lived experience of mine to make progress on this problem."),
+        L("why-q3", "I make room for this work without pretending my real-life responsibilities will disappear."),
         T("why-sentence", "Finish the sentence: I want to build this because…", "Name the problem, why it matters to you, and why now. Avoid generic answers like money, freedom, or being your own boss."),
         T("why-reflection", "What's one part of your why you're still unsure about?")
       ]
@@ -37,9 +37,9 @@
     {
       id: "reality", name: "REALITY", title: "What happens when life doesn't cooperate?", description: "You don't control the timeline.",
       questions: [
-        T("reality-protect", "What won't you sacrifice?", "Think about what you actually protected last month."),
-        L("reality-q1", "Last month, I made a real tradeoff to create room for this work, and I can name what I gave up."),
-        L("reality-q2", "Last month, I talked with the people affected by this plan about what it asks of our time, money, or responsibilities."),
+        T("reality-protect", "What won't you sacrifice?", "Think about what you actually protect."),
+        L("reality-q1", "I have made a real tradeoff to create room for this work, and I can name what I gave up."),
+        L("reality-q2", "I have talked with the people affected by this plan about what it asks of our time, money, or responsibilities."),
         T("reality-q3", "Think of the last time life paused or disrupted a plan you cared about. What did you actually do next?", "Share only what you're comfortable with."),
         T("reality-reflection", "What's one tradeoff you haven't made peace with yet?")
       ]
@@ -47,28 +47,28 @@
     {
       id: "mindset", name: "MINDSET", title: "70% is enough to start when you know what's missing.", description: "What don't you know about yourself yet?",
       questions: [
-        L("mindset-q1", "Last month, when I hit something I didn't know how to do, I named what I didn't know and took a concrete step to learn it."),
-        L("mindset-q2", "Last month, I asked for feedback on something I was avoiding and stayed open long enough to hear it."),
-        L("mindset-q3", "Last month, I noticed an assumption or blind spot in how I was approaching this and changed what I did next."),
-        T("mindset-missing", "What's in your missing 30%? Name up to three things.", "Write the thing you'd least like to admit."),
+        L("mindset-q1", "When I hit something I don't know how to do, I name what I don't know and take a concrete step to learn it."),
+        L("mindset-q2", "I ask for feedback on something I'm avoiding and stay open long enough to hear it."),
+        L("mindset-q3", "I notice an assumption or blind spot in how I'm approaching this and change what I do next."),
+        T("mindset-missing", "What's your missing %?", "Write the thing you'd least like to admit."),
       ]
     },
     {
       id: "capacity", name: "CAPACITY", title: "Capacity is five accounts, not one.", description: "You can be rich in one and bankrupt in another.",
       questions: [
         account("capacity-time", "Time", "Looking at last month, how much usable time did you actually have for building after personal life commitments?"),
-        account("capacity-energy", "Energy", "Last month, how much energy did you actually have left for founder work after your existing responsibilities?"),
-        account("capacity-money", "Money", "Based on last month's income and expenses, how much financial room did you have to work on this without risking essentials?"),
-        account("capacity-emotional", "Emotional bandwidth", "Last month, how much room did you have for uncertainty, setbacks, and difficult decisions?"),
-        account("capacity-people", "People who depend on you", "Last month, how workable was your plan for meeting their needs while building?"),
-        choice("capacity-hours", "How many hours did you actually spend on your venture last month?", [["0–10", "0-10"], ["11–40", "11-40"], ["41–80", "41-80"], ["81–120", "81-120"], ["120+", "120+"]]),
-        choice("capacity-runway", "At your current personal expenses, how many months could you cover essentials with no income?", [["Less than 1", "lt-1"], ["1–3", "1-3"], ["4–6", "4-6"], ["7–12", "7-12"], ["12+", "12+"]]),
+        account("capacity-energy", "Energy", "How much energy do you have left for founder work after your existing responsibilities?"),
+        account("capacity-money", "Money", "Based on your income and expenses, how much financial room do you have to work on this without risking essentials?"),
+        account("capacity-emotional", "Emotional bandwidth", "How much room do you have for uncertainty, setbacks, and difficult decisions?"),
+        account("capacity-people", "People who depend on you", "How workable is your plan for meeting their needs while building?"),
+        choice("capacity-hours", "How many hours did you actually spend on this idea last month?", [["0–10", "0-10"], ["11–40", "11-40"], ["41–80", "41-80"], ["81–120", "81-120"], ["120+", "120+"]]),
+        choice("capacity-runway", "At your current personal expenses, how many months can you cover essentials with no income?", [["Less than 1", "lt-1"], ["1–3", "1-3"], ["4–6", "4-6"], ["7–12", "7-12"], ["12+", "12+"]]),
         choice("capacity-owner", "When work shows up with no clear owner, who takes it?", [["I take it by default", "me-default"], ["I choose to take it", "me-choice"], ["We decide together", "together"], ["Someone else takes it", "someone-else"], ["It stays unowned", "unowned"], ["This hasn't happened", "not-happened"]]),
-        T("capacity-reflection", "What from this section belongs in your missing 30%?")
+        T("capacity-reflection", "What from this section belongs in your missing %?")
       ]
     },
     {
-      id: "people", name: "PEOPLE + SUPPORT", title: "Who's coming with you, and have you validated the relationship?", description: "Your missing 30% is a team sport.",
+      id: "people", name: "PEOPLE + SUPPORT", title: "Who's coming with you, and have you validated the relationship?", description: "Your missing % is a team sport.",
       partnerStatus: choice("partner-status", "Do you have a co-founder or key partner with equity or a defined role?", [["Yes", "yes"], ["Not yet", "not-yet"]]),
       partnerWithPartner: [
         scoredChoice("partner-equity", "Does equity follow role and actual contribution, not friendship, hours, or intention?", [["Yes", "yes", 5], ["Partly", "partly", 3], ["Not yet", "not-yet", 1], ["Not applicable", "na", null]]),
@@ -77,39 +77,39 @@
         scoredChoice("partner-growth", "Have you agreed on what happens if someone doesn't grow into their role?", [["Yes", "yes", 5], ["Partly", "partly", 3], ["Not yet", "not-yet", 1], ["Not applicable", "na", null]]),
         scoredChoice("partner-vesting", "Is there a vesting schedule, and do you know how it protects you if someone steps back?", [["Yes", "yes", 5], ["Partly", "partly", 3], ["Not yet", "not-yet", 1], ["Not applicable", "na", null]]),
         scoredChoice("partner-fit", "Have you validated that this person is truly a good fit, not just someone you trust?", [["Yes", "yes", 5], ["Partly", "partly", 3], ["Not yet", "not-yet", 1], ["Not applicable", "na", null]]),
-        scoredChoice("partner-accountability", "How did you hold them accountable to commitments last month?", [["Yes", "yes", 5], ["Partly", "partly", 3], ["Not yet", "not-yet", 1], ["Not applicable", "na", null]])
+        scoredChoice("partner-accountability", "Have you held them accountable to commitments?", [["Yes", "yes", 5], ["Partly", "partly", 3], ["Not yet", "not-yet", 1], ["Not applicable", "na", null]])
       ],
       partnerSolo: [
         scoredChoice("partner-fit-solo", "Have you validated that the people you plan to bring in are the right fit, not just people you trust?", [["Yes", "yes", 5], ["Partly", "partly", 3], ["Not yet", "not-yet", 1]]),
         scoredChoice("partner-needs-solo", "Have you defined what you'll need from a co-founder or key partner before bringing one in?", [["Yes", "yes", 5], ["Partly", "partly", 3], ["Not yet", "not-yet", 1]])
       ],
       supportMap: ["Co-founder", "Advisor", "Mentor", "Peer founder", "Accountability partner", "Home support", "Truth-teller"].map((seat) => choice(`support-${seat.toLowerCase().replace(/[^a-z]+/g, "-")}`, `${seat}: is this seat filled, partly filled, or empty?`, [["Filled", "filled", 5], ["Partly filled", "partly", 3], ["Empty", "empty", 1]], { scoreMap: true })),
-      reflection: T("people-reflection", "What from this section belongs in your missing 30%?")
+      reflection: T("people-reflection", "What from this section belongs in your missing %?")
     },
     {
       id: "sustainability", name: "SUSTAINABILITY", title: "Can you build this without destroying yourself?", description: "The founder is infrastructure, not a flexible resource. Failure is data, not identity.",
       questions: [
-        L("sustain-sleep", "Last month, I protected the sleep I need often enough to function well."),
-        L("sustain-energy", "Last month, I noticed when my energy was dropping and adjusted my workload or recovery before I hit a wall."),
-        L("sustain-boundaries", "Last month, I held a boundary on my time or availability when work tried to expand into it."),
-        L("sustain-delegation", "Last month, I asked for help or handed off work someone else could own instead of carrying it all myself."),
-        L("sustain-resilience", "After a setback last month, I looked for evidence about what to change in the path rather than treating it as evidence about my worth."),
-        T("sustain-care", "Who takes care of you?", "Who specifically showed up for you last month, and what did they do?"),
-        T("sustain-reflection", "What from this section belongs in your missing 30%?")
+        L("sustain-sleep", "I protect the sleep I need often enough to function well."),
+        L("sustain-energy", "I notice when my energy is dropping and adjust my workload or recovery before I hit a wall."),
+        L("sustain-boundaries", "I hold a boundary on my time or availability when work tries to expand into it."),
+        L("sustain-delegation", "I ask for help or hand off work someone else could own instead of carrying it all myself."),
+        L("sustain-resilience", "After a setback, I look for evidence about what to change in the path rather than treating it as evidence about my worth."),
+        T("sustain-care", "Who takes care of you?", "Who specifically shows up for you, and what do they do?"),
+        T("sustain-reflection", "What from this section belongs in your missing %?")
       ]
     }
   ];
 
   const RETAKE_MODULES = [
     { id: "leadership", title: "Leadership", fullTitle: "Leadership & Decision-Making", questions: [
-      L("leadership-q1", "Last month, when I had incomplete information, I made a decision and acted without waiting for certainty."),
-      L("leadership-q2", "Last month, I followed through on a commitment and owned it when I didn't."),
-      L("leadership-q3", "Last month, I used my values to make or explain a difficult decision.")
+      L("leadership-q1", "When I have incomplete information, I make a decision and act without waiting for certainty."),
+      L("leadership-q2", "I follow through on a commitment and own it when I don't."),
+      L("leadership-q3", "I use my values to make or explain a difficult decision.")
     ] },
     { id: "daily-rhythm", title: "Daily Rhythm", fullTitle: "Building a Founder Rhythm", questions: [
-      L("rhythm-q1", "Last month, I used a regular reflection practice to decide what to do next."),
-      L("rhythm-q2", "Last month, I acknowledged a small win instead of immediately moving the goalposts."),
-      L("rhythm-q3", "Last month, I made time to learn something and applied it.")
+      L("rhythm-q1", "I use a regular reflection practice to decide what to do next."),
+      L("rhythm-q2", "I acknowledge a small win instead of immediately moving the goalposts."),
+      L("rhythm-q3", "I make time to learn something and apply it.")
     ] }
   ];
 
@@ -118,13 +118,13 @@
       min: 85,
       label: "Primed to Launch",
       summary: "You show strong readiness across nearly every founder dimension. Your self-awareness, mindset, and habits give you a solid base for what's ahead.",
-      next: "Founder readiness is the first pillar. Your next step is testing the venture itself: the opportunity, the market, and the business model."
+      next: "Founder readiness is the first pillar. Your next step is testing the idea itself: the opportunity, the market, and a sustainable model."
     },
     {
       min: 70,
       label: "Ready Founder",
       summary: "You have solid foundations across most areas. A few gaps remain, but none are disqualifying. With intentional work over the next 60 days, you can close them.",
-      next: "Spend the next 30 days on your lowest-scoring area, then move on to validating the venture itself."
+      next: "Spend the next 30 days on your lowest-scoring area, then move on to validating your idea with the people it serves."
     },
     {
       min: 55,
@@ -135,13 +135,13 @@
     {
       min: 40,
       label: "Aspiring Founder",
-      summary: "You're drawn to entrepreneurship but haven't yet built the inner infrastructure the journey demands. This isn't a no. It's a not yet, and you know exactly what to work on.",
-      next: "Before pursuing your idea, invest in your mindset and support systems. Give yourself 90 days to build that foundation."
+      summary: "You have a real pull toward entrepreneurship. The foundations that make this work sustainable are still taking shape, giving you clear areas to build: mindset, support, and practical readiness. Each can grow with focused attention.",
+      next: "Build your mindset and support systems while exploring your idea. Give yourself 90 days to strengthen that foundation."
     },
     {
       min: 0,
       label: "Early Explorer",
-      summary: "You're at the very beginning of your founder readiness journey. The most important thing right now is getting honest about your motivations and what you want your life to look like.",
+      summary: "You're at the beginning of your founder readiness journey, with room to explore what motivates you and the kind of life you want this work to support. Start small; your next steps can help you learn what fits.",
       next: "Start with your why. Find a community of aspiring founders and give yourself 90 days of intentional preparation."
     }
   ];
@@ -447,7 +447,7 @@
       const baseline = state.baselinePct === null ? "" : `<p class="fr-hint">Your last completed score of ${state.baselinePct}% is saved as this retake's baseline.</p>`;
       body.innerHTML = `
         ${progressHeader("Before we begin")}
-        <div class="fr-module"><h2 id="fr-dialog-title">How ready do you feel?</h2><p>Go with your gut. As a percentage, how ready do you feel to be a founder right now? You'll see how this compares to your score at the end.</p></div>
+        <div class="fr-module"><h2 id="fr-dialog-title">How ready do you feel?</h2><p>Go with your gut. As a percentage, how ready do you feel to be a founder right now? You'll see how this compares to your score at the end.</p><p class="fr-copy">You don't need a company to take this. If you have an idea you can't stop thinking about, answer for that.</p></div>
         ${baseline}
         <label class="fr-slider-label" for="fr-starting-number"><span>Your starting number</span><output id="fr-starting-output">${state.startingNumber === null ? "Choose 0–100%" : `${state.startingNumber}%`}</output></label>
         <input class="fr-slider" id="fr-starting-number" type="range" min="0" max="100" step="5" value="${state.startingNumber ?? 50}" aria-label="Starting readiness percentage">
@@ -516,7 +516,7 @@
       const scoredCount = questions.filter((question) => question.scored).length;
       body.innerHTML = `
         ${progressHeader(label)}
-        <div class="fr-module"><h2 id="fr-dialog-title">${esc(isSection ? section.name : module.fullTitle)}</h2><p>${esc(isSection ? section.description : "This module was not covered in the workshop. Answer based on what you actually did last month.")}</p></div>
+        <div class="fr-module"><h2 id="fr-dialog-title">${esc(isSection ? section.name : module.fullTitle)}</h2><p>${esc(isSection ? section.description : "This module was not covered in the workshop. Answer based on what you actually do.")}</p></div>
         ${questions.map(renderQuestion).join("")}
         <nav class="fr-nav" aria-label="Assessment navigation">
           <button class="fr-button fr-back" type="button" data-action="back">Back</button>
@@ -595,7 +595,7 @@
     function resultPayload(report) {
       const capacitySection = SECTIONS.find((section) => section.id === "capacity");
       const peopleSection = SECTIONS.find((section) => section.id === "people");
-      const firstAssignment = report.firstAssignment || "Choose one item from your missing 30% and make it your first concrete step.";
+      const firstAssignment = report.firstAssignment || "Choose one item from your missing % and make it your first concrete step.";
       const lowestArea = report.focus[0]?.title || "";
       return {
         schemaVersion: 3,
@@ -683,7 +683,7 @@
       const startingGap = report.gapFromStarting >= 0 ? `+${report.gapFromStarting}` : `${report.gapFromStarting}`;
       const baseline = state.baselinePct === null ? "" : `<p class="fr-copy">Change from your previous score baseline (${state.baselinePct}%): ${report.gapFromBaseline >= 0 ? "+" : ""}${report.gapFromBaseline} points.</p>`;
       const dimensionsLabel = state.retake ? "Six workshop sections plus retake modules" : "Six workshop sections";
-      const assignment = report.firstAssignment || "Choose one item from your missing 30% and make it your first concrete step.";
+      const assignment = report.firstAssignment || "Choose one item from your missing % and make it your first concrete step.";
       const emailNote = RESULTS_ENDPOINT ? `<p class="fr-sent" role="status">Your full report is on its way to ${esc(state.email)}.</p>` : "";
       const retakeCopy = state.retake
         ? "Your 30-day retake includes Leadership and Daily Rhythm, the two modules not covered in the workshop."
@@ -692,14 +692,16 @@
         <p class="fr-eyebrow">${esc(state.name)}, your founder readiness profile</p>
         <h1 class="fr-title" id="fr-dialog-title">${esc(report.profile.label)}</h1>
         <div class="fr-result-score"><strong>${report.totalPct}%</strong><span>overall readiness</span></div>
+        <p class="fr-copy">No founder is ever 100% ready. A gap between how ready you felt and how you scored isn't a verdict. It's your map.</p>
         <p class="fr-gap">Starting number: ${state.startingNumber}%. Final score: ${report.totalPct}%. Gap: ${startingGap} points.</p>
         ${baseline}
         <p class="fr-copy">${esc(report.profile.summary)}</p>
-        <section class="fr-result-block"><h3>Your missing 30%</h3>${missingSummaryRows || "<p>No missing-30% notes were added.</p>"}</section>
-        <section class="fr-result-block"><h3>Your first assignment: missing 30%</h3><p>${esc(assignment)}</p></section>
+        <section class="fr-result-block"><h3>Your missing %</h3>${missingSummaryRows || "<p>No missing % notes were added.</p>"}</section>
+        <section class="fr-result-block"><h3>Your first assignment: missing %</h3><p>${esc(assignment)}</p></section>
         <section class="fr-result-block"><h3>30-Day Experiment</h3><p>Live the schedule your audit says you'll need for 30 days before committing years.</p></section>
         <div class="fr-cta">
-          <a class="fr-button" href="${esc(bookingLink())}" target="_blank" rel="noopener">Book a session</a>
+          <p class="fr-copy">Bring this report. In 30 minutes we'll pick your biggest gap and the first person you need to recruit to fill it.</p>
+          <a class="fr-button" href="${esc(bookingLink())}" target="_blank" rel="noopener">Book your free 30-minute session.</a>
           <a class="fr-button fr-back" href="${esc(frameworkLink())}" target="_blank" rel="noopener">Get the Venture Validation Framework</a>
         </div>
         <p class="fr-copy fr-next">${esc(report.profile.next)}</p>
@@ -709,7 +711,7 @@
         ${reflections}
         <section class="fr-result-block"><h3>In 30 days</h3><p>${esc(retakeCopy)}</p></section>
         <p class="fr-quote">"The biggest risk in entrepreneurship is not that your startup fails. The biggest risk is becoming disconnected from yourself while trying to build it."</p>
-        <nav class="fr-nav" aria-label="Results actions"><button class="fr-button fr-back" type="button" data-action="retake">${state.retake ? "Start another attempt" : "Begin 30-day retake"}</button></nav>`;
+        `;
     }
 
     function render(message = "") {

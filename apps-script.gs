@@ -76,6 +76,7 @@ function renderPlainText(payload) {
     `Founder Readiness Report for ${payload.name}`,
     "",
     `Final readiness score: ${finalScore(payload)}%`,
+    "No founder is ever 100% ready. A gap between how ready you felt and how you scored isn't a verdict. It's your map.",
     `Starting number: ${startingNumber(payload)}%`,
     `Gap from starting number: ${signed(payload.gapFromStartingNumberPct ?? payload.gap)} points`,
     payload.baselineScorePct === null || payload.baselineScorePct === undefined ? "" : `Previous score baseline: ${payload.baselineScorePct}% (${signed(payload.gapFromBaselinePct)} points)`,
@@ -105,12 +106,14 @@ function renderPlainText(payload) {
     "CO-FOUNDER / PARTNER ITEMS TO VALIDATE",
     ...(payload.partner && payload.partner.unvalidatedItems || []).map((item) => `${item.question}: ${item.answer}`),
     "",
-    "MISSING 30% SUMMARY",
+    "MISSING % SUMMARY",
     ...missing30Lines(payload.missing30Summary),
     "",
     `First assignment: ${firstAssignment(payload)}`,
     "",
-    `Book a session: ${payload.bookingUrl || ""}`,
+    "Bring this report. In 30 minutes we'll pick your biggest gap and the first person you need to recruit to fill it.",
+    "Book your free 30-minute session.",
+    payload.bookingUrl || "",
     `Venture Validation Framework: ${payload.frameworkUrl || ""}`
   ];
   return lines.filter((line) => line !== null && line !== undefined).join("\n");
@@ -141,6 +144,7 @@ function renderHtml(payload) {
     <h1 style="color:#142033">Your Founder Readiness Report</h1>
     <p>Hi ${escapeHtml(payload.name)},</p>
     <p>Your final readiness score is <strong>${escapeHtml(finalScore(payload))}%</strong>. Your starting number was <strong>${escapeHtml(startingNumber(payload))}%</strong>, a gap of <strong>${escapeHtml(signed(payload.gapFromStartingNumberPct ?? payload.gap))} points</strong>.</p>
+    <p>No founder is ever 100% ready. A gap between how ready you felt and how you scored isn't a verdict. It's your map.</p>
     ${baselineLine}
     <h2>${escapeHtml(profileLabel(payload) || "Your profile")}</h2>
     <p>${escapeHtml(profileSummary(payload))}</p>
@@ -151,10 +155,11 @@ function renderHtml(payload) {
     <p><strong>Hours last month:</strong> ${escapeHtml(payload.capacity && payload.capacity.hoursLastMonth || "Not provided")}<br><strong>Runway:</strong> ${escapeHtml(payload.capacity && payload.capacity.runwayMonths || "Not provided")}</p>
     <h2>Support map</h2><ul>${supportRows}</ul><p><strong>Gaps to fill before launch:</strong> ${escapeHtml(emptySeats)}</p>
     <h2>Co-founder / partner items to validate</h2><ul>${partnerRows}</ul>
-    <h2>Your missing 30%</h2><ul>${missing30ReflectionRows}</ul>
+    <h2>Your missing %</h2><ul>${missing30ReflectionRows}</ul>
     <h2>Your first assignment</h2><p>${escapeHtml(firstAssignment(payload))}</p>
     <h2>30-Day Experiment</h2><p>${escapeHtml(payload.capacity && payload.capacity.homework || "Live the schedule your audit says you'll need for 30 days before committing years.")}</p>
-    <p style="margin:28px 0"><a href="${escapeHtml(bookingUrl)}" style="background:#C6A15B;color:#0A1220;text-decoration:none;padding:12px 18px;border-radius:5px;display:inline-block;font-weight:bold">Book a session</a></p>
+    <p>Bring this report. In 30 minutes we'll pick your biggest gap and the first person you need to recruit to fill it.</p>
+    <p style="margin:28px 0"><a href="${escapeHtml(bookingUrl)}" style="background:#C6A15B;color:#0A1220;text-decoration:none;padding:12px 18px;border-radius:5px;display:inline-block;font-weight:bold">Book your free 30-minute session.</a></p>
     <p><a href="${escapeHtml(frameworkUrl)}">Venture Validation Framework</a></p>
     <p>In 30 days, retake the assessment with tonight's score as your baseline. Leadership and Daily Rhythm will be added.</p>
   </div>`;
@@ -186,11 +191,11 @@ function startingNumber(payload) {
 }
 
 function firstAssignment(payload) {
-  return payload.firstAssignment || payload.assignment || "Choose one item from your missing 30% and make it your first concrete step.";
+  return payload.firstAssignment || payload.assignment || "Choose one item from your missing % and make it your first concrete step.";
 }
 
 function missing30Lines(summary) {
-  if (!summary) return ["No missing-30% findings were submitted."];
+  if (!summary) return ["No missing % findings were submitted."];
   const constraint = summary.capacityConstraint;
   return [
     `MINDSET: ${summary.mindsetAnswer || "No response"}`,
