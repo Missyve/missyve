@@ -595,18 +595,32 @@
     function resultPayload(report) {
       const capacitySection = SECTIONS.find((section) => section.id === "capacity");
       const peopleSection = SECTIONS.find((section) => section.id === "people");
+      const firstAssignment = report.firstAssignment || "Choose one item from your missing 30% and make it your first concrete step.";
+      const lowestArea = report.focus[0]?.title || "";
       return {
         schemaVersion: 3,
         attemptId: state.attemptId,
         mode: state.retake ? "retake" : "workshop",
+        code,
         name: state.name,
         email: state.email,
         startingNumberPct: state.startingNumber,
+        felt: state.startingNumber,
         baselineScorePct: state.baselinePct,
         finalScorePct: report.totalPct,
+        score: report.totalPct,
         gapFromStartingNumberPct: report.gapFromStarting,
         gapFromBaselinePct: report.gapFromBaseline,
-        profile: { label: report.profile.label, summary: report.profile.summary, nextStep: report.profile.next },
+        profile: report.profile.label,
+        profileDetails: { label: report.profile.label, summary: report.profile.summary, nextStep: report.profile.next },
+        summary: report.profile.summary,
+        next: report.profile.next,
+        lowestArea,
+        assignmentTitle: lowestArea,
+        assignment: firstAssignment,
+        coachingUrl: bookingLink(),
+        modules: report.sectionScores.map((section) => ({ title: section.title, fullTitle: section.title, pct: section.pct })),
+        focus: report.focus.map((item) => item.title),
         sectionScores: report.sectionScores,
         sectionAnswers: report.sectionAnswers,
         retakeModuleScores: report.retakeScores,
