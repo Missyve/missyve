@@ -56,12 +56,12 @@
     {
       id: "capacity", name: "CAPACITY", title: "Capacity is five accounts, not one.", description: "You can be rich in one and bankrupt in another.",
       questions: [
-        account("capacity-time", "Time", "Looking at last month, how much usable time did you actually have for building after personal life commitments?"),
+        account("capacity-time", "Time", "How much usable time do you actually have for building after personal life commitments?"),
         account("capacity-energy", "Energy", "How much energy do you have left for founder work after your existing responsibilities?"),
         account("capacity-money", "Money", "Based on your income and expenses, how much financial room do you have to work on this without risking essentials?"),
         account("capacity-emotional", "Emotional bandwidth", "How much room do you have for uncertainty, setbacks, and difficult decisions?"),
         account("capacity-people", "People who depend on you", "How workable is your plan for meeting their needs while building?"),
-        choice("capacity-hours", "How many hours did you actually spend on this idea last month?", [["0–10", "0-10"], ["11–40", "11-40"], ["41–80", "41-80"], ["81–120", "81-120"], ["120+", "120+"]]),
+        choice("capacity-hours", "How many hours did you actually spend on this idea last month?", [["0", "0"], ["1–10", "1-10"], ["11–20", "11-20"], ["21–30", "21-30"], ["31–40", "31-40"], ["41+", "41+"]]),
         choice("capacity-runway", "At your current personal expenses, how many months can you cover essentials with no income?", [["Less than 1", "lt-1"], ["1–3", "1-3"], ["4–6", "4-6"], ["7–12", "7-12"], ["12+", "12+"]]),
         choice("capacity-owner", "When work shows up with no clear owner, who takes it?", [["I take it by default", "me-default"], ["I choose to take it", "me-choice"], ["We decide together", "together"], ["Someone else takes it", "someone-else"], ["It stays unowned", "unowned"], ["This hasn't happened", "not-happened"]]),
         T("capacity-reflection", "What from this section belongs in your missing %?")
