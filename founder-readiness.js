@@ -1,12 +1,7 @@
 (() => {
-  const ACCESS_CODE = "femmefounders26";
   // ---------------------------------------------------------------------------
-  // CONFIG: edit these to run a workshop
+  // Assessment configuration
   // ---------------------------------------------------------------------------
-  // Each access code sets a mode. "workshop" = gated sections you open live.
-  // "self" = self-paced, all 10 modules, no holds. Add more codes as needed.
-  const CODES = { [ACCESS_CODE]: "workshop" };
-  const UNLOCK_WORDS = { why: "why", reality: "reality", mindset: "mindset", capacity: "capacity", people: "support", sustainability: "sustain", results: "ready" };
   // Optional: where coaching buttons go. Leave blank to use email.
   const BOOKING_URL = "https://calendly.com/melissawood-missyve/30min";
   const CONTACT_EMAIL = "melissa@missyve.co";
@@ -309,8 +304,6 @@
     const closeButton = overlay.querySelector(".fr-close");
 
     const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-    let code = null;
-    let mode = "self";
     let flow = [];
     let state = null;
     let attemptStore = { schemaVersion: 3, currentAttemptId: null, attempts: [] };
@@ -318,17 +311,22 @@
     function newId() {
       return globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     }
-    function storageKey() { return `fr-attempts-v3-${code}`; }
+    function storageKey() { return "fr-attempts-v3"; }
     function readAttemptStore() {
       try {
-        const parsed = JSON.parse(localStorage.getItem(storageKey()) || "null");
-        if (parsed?.schemaVersion === 3 && Array.isArray(parsed.attempts)) return parsed;
+        const keys = [storageKey(), ...Object.keys(localStorage).filter((key) => key.startsWith(`${storageKey()}-`))];
+        for (const key of keys) {
+          try {
+            const parsed = JSON.parse(localStorage.getItem(key) || "null");
+            if (parsed?.schemaVersion === 3 && Array.isArray(parsed.attempts)) return parsed;
+          } catch (e) { /* try the next saved attempt store */ }
+        }
       } catch (e) { /* storage unavailable or invalid */ }
       return { schemaVersion: 3, currentAttemptId: null, attempts: [] };
     }
     function freshState({ name = "", email = "", retake = false, baselinePct = null } = {}) {
       return {
-        attemptId: newId(), createdAt: new Date().toISOString(), step: 0, answers: {}, unlocked: {},
+        attemptId: newId(), createdAt: new Date().toISOString(), step: 0, flowVersion: 1, answers: {},
         startingNumber: null, baselinePct, retake, sent: false, name, email, completedAt: null, scorePct: null
       };
     }
@@ -342,14 +340,21 @@
     }
     function buildFlow() {
       const steps = [{ type: "details" }, { type: "checkin" }];
-      SECTIONS.forEach((section) => {
-        steps.push({ type: "hold", id: section.id });
-        steps.push({ type: "section", id: section.id });
-      });
+      SECTIONS.forEach((section) => steps.push({ type: "section", id: section.id }));
       if (state?.retake) RETAKE_MODULES.forEach((module) => steps.push({ type: "retakeModule", id: module.id }));
-      steps.push({ type: "hold", id: "results" });
       steps.push({ type: "results" });
       return steps;
+    }
+    function migrateSavedStep(savedState) {
+      const previousStep = Math.max(0, Number(savedState.step) || 0);
+      const sectionsStart = 2;
+      const previousSectionsEnd = sectionsStart + SECTIONS.length * 2;
+      if (previousStep < sectionsStart) return previousStep;
+      if (previousStep < previousSectionsEnd) return sectionsStart + Math.floor((previousStep - sectionsStart) / 2);
+      if (savedState.retake && previousStep < previousSectionsEnd + RETAKE_MODULES.length) {
+        return sectionsStart + SECTIONS.length + (previousStep - previousSectionsEnd);
+      }
+      return sectionsStart + SECTIONS.length + (savedState.retake ? RETAKE_MODULES.length : 0);
     }
     function sectionQuestions(section) {
       if (section.id !== "people") return section.questions;
@@ -406,20 +411,20 @@
       flow = buildFlow();
       save();
     }
-
-    function renderGate(message = "") {
-      body.innerHTML = `
-        <div class="fr-gate">
-          <p class="fr-eyebrow">Private assessment</p>
-          <h1 class="fr-title" id="fr-dialog-title">Founder Readiness</h1>
-          <p class="fr-copy">Enter your access code to begin. Your answers are saved, so you can pick up where you left off.</p>
-          <form class="fr-form" data-form="access">
-            <input class="fr-code" type="password" name="code" autocomplete="off" placeholder="Access code" aria-label="Access code" required>
-            <button class="fr-button" type="submit">Continue</button>
-          </form>
-          <p class="fr-error" role="alert">${message}</p>
-        </div>`;
-      body.querySelector("input").focus();
+    function startOrResumeAttempt() {
+      attemptStore = readAttemptStore();
+      const current = attemptStore.attempts.find((attempt) => attempt.attemptId === attemptStore.currentAttemptId);
+      if (current && !current.completedAt) {
+        state = JSON.parse(JSON.stringify(current));
+        if (state.flowVersion !== 1) state.step = migrateSavedStep(state);
+        state.flowVersion = 1;
+        flow = buildFlow();
+        state.step = Math.min(state.step, flow.length - 1);
+        save();
+      } else {
+        beginAttempt();
+      }
+      render();
     }
 
     function progressHeader(label) {
@@ -456,29 +461,6 @@
           <button class="fr-button fr-back" type="button" data-action="back">Back</button>
           <button class="fr-button" type="button" data-action="next" ${state.startingNumber === null ? "disabled" : ""}>Continue</button>
         </nav>`;
-    }
-
-    function renderHold(step, message = "") {
-      const isResults = step.id === "results";
-      const section = isResults ? null : SECTIONS.find((item) => item.id === step.id);
-      const title = isResults ? "Your results are next" : `Next: ${section.name}`;
-      const copy = isResults
-        ? "Hold here. We'll reveal results together at the end. Enter the word on screen when it's time."
-        : "Hold here. We'll open this section together when we get to it. Enter the word on screen to continue.";
-      const label = isResults ? "All sections complete" : `Section ${SECTIONS.indexOf(section) + 1} of ${SECTIONS.length}`;
-      body.innerHTML = `
-        ${progressHeader(label)}
-        <div class="fr-gate fr-hold">
-          <p class="fr-eyebrow">Hold here</p>
-          <h1 class="fr-title" id="fr-dialog-title">${esc(title)}</h1>
-          <p class="fr-copy">${copy}</p>
-          <form class="fr-form" data-form="unlock">
-            <input class="fr-code" type="text" name="word" autocomplete="off" autocapitalize="none" placeholder="Word on screen" aria-label="Unlock word" required>
-            <button class="fr-button" type="submit">Open</button>
-          </form>
-          <p class="fr-error" role="alert">${message}</p>
-          ${state.step > 2 ? '<nav class="fr-nav"><button class="fr-button fr-back" type="button" data-action="back">Review my answers</button></nav>' : ""}
-        </div>`;
     }
 
     function renderQuestion(question, index) {
@@ -600,8 +582,8 @@
       return {
         schemaVersion: 3,
         attemptId: state.attemptId,
-        mode: state.retake ? "retake" : "workshop",
-        code,
+        mode: state.retake ? "retake" : "self-paced",
+        code: "self-paced",
         name: state.name,
         email: state.email,
         startingNumberPct: state.startingNumber,
@@ -711,6 +693,7 @@
         ${reflections}
         <section class="fr-result-block"><h3>In 30 days</h3><p>${esc(retakeCopy)}</p></section>
         <p class="fr-quote">"The biggest risk in entrepreneurship is not that your startup fails. The biggest risk is becoming disconnected from yourself while trying to build it."</p>
+        <nav class="fr-nav" aria-label="Results actions"><button class="fr-button fr-back" type="button" data-action="retake">Retake assessment</button></nav>
         `;
     }
 
@@ -718,24 +701,18 @@
       const step = flow[state.step];
       if (step.type === "details") renderDetails(message);
       else if (step.type === "checkin") renderCheckin();
-      else if (step.type === "hold") renderHold(step, message);
       else if (step.type === "section" || step.type === "retakeModule") renderModule(step);
       else renderResults(message);
       body.scrollTop = 0;
     }
 
     function go(delta) {
-      let i = state.step + delta;
-      // skip holds already opened when moving backward
-      while (delta < 0 && i > 0 && flow[i].type === "hold" && state.unlocked[flow[i].id]) i -= 1;
-      state.step = Math.max(0, Math.min(flow.length - 1, i));
+      state.step = Math.max(0, Math.min(flow.length - 1, state.step + delta));
       save();
       render();
     }
     function advance() {
-      let i = state.step + 1;
-      while (i < flow.length && flow[i].type === "hold" && state.unlocked[flow[i].id]) i += 1;
-      state.step = Math.min(flow.length - 1, i);
+      state.step = Math.min(flow.length - 1, state.step + 1);
       save();
       render();
     }
@@ -743,14 +720,14 @@
     function close() {
       overlay.hidden = true;
       document.body.style.overflow = "";
-      renderGate();
+      save();
       launchButton.focus();
     }
 
     launchButton.addEventListener("click", () => {
       overlay.hidden = false;
       document.body.style.overflow = "hidden";
-      renderGate();
+      startOrResumeAttempt();
     });
 
     closeButton.addEventListener("click", close);
@@ -763,40 +740,16 @@
 
     body.addEventListener("submit", (event) => {
       const form = event.target.dataset.form;
-      if (!form) return;
+      if (form !== "details") return;
       event.preventDefault();
       const data = new FormData(event.target);
-      if (form === "access") {
-        const entered = String(data.get("code") || "").trim().toLowerCase();
-        const match = Object.keys(CODES).find((k) => k.toLowerCase() === entered);
-        if (!match) { renderGate("That code didn't work. Check it and try again."); return; }
-        code = match;
-        mode = CODES[match];
-        attemptStore = readAttemptStore();
-        const current = attemptStore.attempts.find((attempt) => attempt.attemptId === attemptStore.currentAttemptId);
-        if (current) {
-          state = JSON.parse(JSON.stringify(current));
-          flow = buildFlow();
-        } else {
-          beginAttempt();
-        }
-        if (state.step >= flow.length) state.step = 0;
-        render();
-      } else if (form === "unlock") {
-        const step = flow[state.step];
-        const word = String(data.get("word") || "").trim().toLowerCase();
-        if (word !== String(UNLOCK_WORDS[step.id]).toLowerCase()) { renderHold(step, "Not quite. Check the word on screen and try again."); return; }
-        state.unlocked[step.id] = true;
-        advance();
-      } else if (form === "details") {
-        const name = String(data.get("name") || "").trim();
-        const email = String(data.get("email") || "").trim();
-        state.name = name;
-        state.email = email;
-        if (!name) { renderDetails("Add your first name to continue."); return; }
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { renderDetails("Enter a valid email so we can send your report."); return; }
-        advance();
-      }
+      const name = String(data.get("name") || "").trim();
+      const email = String(data.get("email") || "").trim();
+      state.name = name;
+      state.email = email;
+      if (!name) { renderDetails("Add your first name to continue."); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { renderDetails("Enter a valid email so we can send your report."); return; }
+      advance();
     });
 
     body.addEventListener("input", (event) => {
@@ -848,7 +801,6 @@
       }
     });
 
-    renderGate();
     body.innerHTML = "";
   }
 
