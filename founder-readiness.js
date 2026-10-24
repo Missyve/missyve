@@ -692,7 +692,6 @@
         <div class="fr-highlights"><section><h3>Your strengths</h3>${report.strengths.map((item) => `<p>${esc(item.title)}</p>`).join("")}</section><section><h3>Focus areas</h3>${report.focus.map((item) => `<p>${esc(item.title)}</p>`).join("")}</section></div>
         ${reflections}
         <section class="fr-result-block"><h3>In 30 days</h3><p>${esc(retakeCopy)}</p></section>
-        <button class="fr-button fr-wide" type="button" data-action="retake">Retake the assessment</button>
         <p class="fr-quote">"The biggest risk in entrepreneurship is not that your startup fails. The biggest risk is becoming disconnected from yourself while trying to build it."</p>
         <nav class="fr-nav" aria-label="Results actions"><button class="fr-button fr-back" type="button" data-action="retake">Retake assessment</button></nav>
         `;
