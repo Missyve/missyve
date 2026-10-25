@@ -761,6 +761,21 @@
       render();
     }
 
+    // Mobile browser bars can overlap fixed elements, so fit the overlay to the visible area.
+    function fitToViewport() {
+      const vv = window.visualViewport;
+      if (overlay.hidden || !vv) return;
+      overlay.style.top = `${vv.offsetTop}px`;
+      overlay.style.left = `${vv.offsetLeft}px`;
+      overlay.style.right = "auto";
+      overlay.style.bottom = "auto";
+      overlay.style.width = `${vv.width}px`;
+      overlay.style.height = `${vv.height}px`;
+      panel.style.maxHeight = `${Math.min(900, vv.height - (vv.width <= 520 ? 20 : 40))}px`;
+    }
+    window.visualViewport?.addEventListener("resize", fitToViewport);
+    window.visualViewport?.addEventListener("scroll", fitToViewport);
+
     function close() {
       overlay.hidden = true;
       document.body.style.overflow = "";
@@ -771,6 +786,7 @@
     launchButton.addEventListener("click", () => {
       overlay.hidden = false;
       document.body.style.overflow = "hidden";
+      fitToViewport();
       startOrResumeAttempt();
     });
 
