@@ -10,6 +10,15 @@
   // founder. Leave blank and results stay on the device only.
   const RESULTS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxtnhckqHy2eyVJnMOYl1WR-jOjqzd4e7VxL5EtvUtJiMjiAJ8tT4NK-0Jb28gV2_bIsQ/exec";
 
+  // Workshop mode: edit codes and unlock words here for future events.
+  // Matching ignores case and spaces. Section words follow the order of SECTIONS.
+  const WORKSHOP = {
+    codes: ["femmefounders26"],
+    sectionWords: ["WHY", "REALITY", "MINDSET", "CAPACITY", "SUPPORT", "SUSTAIN"],
+    resultsWord: "READY"
+  };
+  const normalizeWord = (value) => String(value ?? "").replace(/\s+/g, "").toLowerCase();
+
   const LABELS = ["Strongly disagree", "Disagree", "Neutral", "Agree", "Strongly agree"];
   const L = (id, text) => ({ id, type: "likert", text, scored: true, required: true });
   const T = (id, text, placeholder = "") => ({ id, type: "text", text, placeholder, scored: false, required: false });
@@ -327,7 +336,8 @@
     function freshState({ name = "", email = "", retake = false, baselinePct = null } = {}) {
       return {
         attemptId: newId(), createdAt: new Date().toISOString(), step: 0, flowVersion: 1, answers: {},
-        startingNumber: null, baselinePct, retake, sent: false, name, email, completedAt: null, scorePct: null
+        startingNumber: null, baselinePct, retake, sent: false, name, email, completedAt: null, scorePct: null,
+        workshop: false, code: "", unlocked: []
       };
     }
     function save() {
@@ -442,10 +452,40 @@
         <form class="fr-details" data-form="details" novalidate>
           <label class="fr-field"><span>First name</span><input class="fr-code" type="text" name="name" autocomplete="given-name" value="${esc(state.name)}" required></label>
           <label class="fr-field"><span>Email</span><input class="fr-code" type="email" name="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" enterkeyhint="done" value="${esc(state.email)}" required></label>
+          <label class="fr-field"><span>Workshop code (optional)</span><input class="fr-code" type="text" name="code" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="go" value="${esc(state.codeInput ?? state.code)}"></label>
           <p class="fr-error" role="alert">${message}</p>
           <button class="fr-button fr-wide" type="submit">Start the assessment</button>
           <p class="fr-hint">We'll only use your email to send your report and follow up about founder coaching. Unsubscribe anytime.</p>
         </form>`;
+    }
+
+    function lockKeyFor(step) {
+      if (!state.workshop || state.retake) return null;
+      if (step.type === "section") return step.id;
+      if (step.type === "results") return "results";
+      return null;
+    }
+    function expectedWord(key) {
+      if (key === "results") return WORKSHOP.resultsWord;
+      return WORKSHOP.sectionWords[SECTIONS.findIndex((section) => section.id === key)];
+    }
+    function renderLock(key, message = "") {
+      const isResults = key === "results";
+      const number = SECTIONS.findIndex((section) => section.id === key) + 1;
+      const heading = isResults ? "Almost there" : `Section ${number} of ${SECTIONS.length} is locked`;
+      const text = isResults
+        ? "Almost there. Type the word on screen to see your results."
+        : "Wait for Melissa to finish this lesson, then type the word on screen.";
+      body.innerHTML = `
+        ${progressHeader(isResults ? "Final results" : `Section ${number} of ${SECTIONS.length}`)}
+        <div class="fr-module"><h2 id="fr-dialog-title">${esc(heading)}</h2><p>${esc(text)}</p></div>
+        <form class="fr-details" data-form="unlock" novalidate>
+          <label class="fr-field"><span>Word on screen</span><input class="fr-code" type="text" name="word" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Unlock word"></label>
+          <p class="fr-error" role="alert">${esc(message)}</p>
+          <button class="fr-button fr-wide" type="submit">Unlock</button>
+        </form>
+        <nav class="fr-nav" aria-label="Assessment navigation"><button class="fr-button fr-back" type="button" data-action="back">Back</button></nav>`;
+      body.querySelector('input[name="word"]').focus();
     }
 
     function renderCheckin() {
@@ -583,7 +623,7 @@
         schemaVersion: 3,
         attemptId: state.attemptId,
         mode: state.retake ? "retake" : "self-paced",
-        code: "self-paced",
+        code: state.workshop ? state.code : "self-paced",
         name: state.name,
         email: state.email,
         startingNumberPct: state.startingNumber,
@@ -699,6 +739,8 @@
 
     function render(message = "") {
       const step = flow[state.step];
+      const lockKey = lockKeyFor(step);
+      if (lockKey && !state.unlocked.includes(lockKey)) { renderLock(lockKey, message); return; }
       if (step.type === "details") renderDetails(message);
       else if (step.type === "checkin") renderCheckin();
       else if (step.type === "section" || step.type === "retakeModule") renderModule(step);
@@ -740,15 +782,39 @@
 
     body.addEventListener("submit", (event) => {
       const form = event.target.dataset.form;
+      if (form === "unlock") {
+        event.preventDefault();
+        const key = lockKeyFor(flow[state.step]);
+        const typed = new FormData(event.target).get("word");
+        if (key && normalizeWord(typed) === normalizeWord(expectedWord(key))) {
+          if (!state.unlocked.includes(key)) state.unlocked.push(key);
+          save();
+          render();
+        } else {
+          renderLock(key, "Not quite. Check the screen and try again.");
+        }
+        return;
+      }
       if (form !== "details") return;
       event.preventDefault();
       const data = new FormData(event.target);
+      const codeInput = String(data.get("code") || "");
+      state.codeInput = codeInput;
       const name = String(data.get("name") || "").trim();
       const email = String(data.get("email") || "").trim();
       state.name = name;
       state.email = email;
       if (!name) { renderDetails("Add your first name to continue."); return; }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { renderDetails("Enter a valid email so we can send your report."); return; }
+      const typedCode = normalizeWord(codeInput);
+      if (typedCode && !WORKSHOP.codes.some((code) => normalizeWord(code) === typedCode)) {
+        renderDetails("That workshop code isn't recognized. Check it, or clear the field to go at your own pace.");
+        return;
+      }
+      state.workshop = Boolean(typedCode);
+      state.code = state.workshop ? typedCode : "";
+      delete state.codeInput;
+      if (!state.workshop) state.unlocked = [];
       advance();
     });
 
