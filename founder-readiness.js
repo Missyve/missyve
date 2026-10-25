@@ -336,7 +336,7 @@
     }
     function freshState({ name = "", email = "", retake = false, baselinePct = null } = {}) {
       return {
-        attemptId: newId(), createdAt: new Date().toISOString(), step: 0, flowVersion: 1, answers: {},
+        attemptId: newId(), createdAt: new Date().toISOString(), step: 0, flowVersion: 2, answers: {},
         startingNumber: null, baselinePct, retake, sent: false, name, email, completedAt: null, scorePct: null,
         workshop: false, code: "", unlocked: []
       };
@@ -350,7 +350,7 @@
       try { localStorage.setItem(storageKey(), JSON.stringify(attemptStore)); } catch (e) { /* storage unavailable */ }
     }
     function buildFlow() {
-      const steps = [{ type: "details" }, { type: "checkin" }];
+      const steps = [...(state?.retake ? [] : [{ type: "code" }]), { type: "details" }, { type: "checkin" }];
       SECTIONS.forEach((section) => steps.push({ type: "section", id: section.id }));
       if (state?.retake) RETAKE_MODULES.forEach((module) => steps.push({ type: "retakeModule", id: module.id }));
       steps.push({ type: "results" });
@@ -427,8 +427,10 @@
       const current = attemptStore.attempts.find((attempt) => attempt.attemptId === attemptStore.currentAttemptId);
       if (current && !current.completedAt) {
         state = JSON.parse(JSON.stringify(current));
-        if (state.flowVersion !== 1) state.step = migrateSavedStep(state);
-        state.flowVersion = 1;
+        if (!state.flowVersion || state.flowVersion < 1) state.step = migrateSavedStep(state);
+        if ((state.flowVersion || 0) < 2 && !state.retake) state.step += 1;
+        state.flowVersion = 2;
+        state.unlocked = state.unlocked || [];
         flow = buildFlow();
         state.step = Math.min(state.step, flow.length - 1);
         save();
@@ -446,12 +448,23 @@
         <div class="fr-progress-track" role="progressbar" aria-label="Assessment progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><div class="fr-progress-fill" style="width:${pct}%"></div></div>`;
     }
 
+    function renderCode(message = "") {
+      body.innerHTML = `
+        ${progressHeader("Before we begin")}
+        <div class="fr-module"><h2 id="fr-dialog-title">Enter your workshop code</h2><p>Type the code shown on screen to begin.</p></div>
+        <form class="fr-details" data-form="code" novalidate>
+          <label class="fr-field"><span>Workshop code</span><input class="fr-code" type="text" name="code" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Workshop code" value="${esc(state.code)}" required></label>
+          <p class="fr-error" role="alert">${esc(message)}</p>
+          <button class="fr-button fr-wide" type="submit">Continue</button>
+        </form>`;
+      body.querySelector('input[name="code"]').focus();
+    }
+
     function renderDetails(message = "") {
       body.innerHTML = `
         ${progressHeader("Before we begin")}
         <div class="fr-module"><h2 id="fr-dialog-title">Where should we send your report?</h2><p>When you finish, we'll email you your full readiness report: your score, your strengths, your focus areas, and your first assignment.</p></div>
         <form class="fr-details" data-form="details" novalidate>
-          <label class="fr-field"><span>Workshop code (optional)</span><input class="fr-code" type="text" name="code" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="go" value="${esc(state.codeInput ?? state.code)}"></label>
           <label class="fr-field"><span>First name</span><input class="fr-code" type="text" name="name" autocomplete="given-name" value="${esc(state.name)}" required></label>
           <label class="fr-field"><span>Email</span><input class="fr-code" type="email" name="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" enterkeyhint="done" value="${esc(state.email)}" required></label>
           <p class="fr-error" role="alert">${message}</p>
@@ -742,7 +755,8 @@
       const step = flow[state.step];
       const lockKey = lockKeyFor(step);
       if (lockKey && !state.unlocked.includes(lockKey)) { renderLock(lockKey, message); return; }
-      if (step.type === "details") renderDetails(message);
+      if (step.type === "code") renderCode(message);
+      else if (step.type === "details") renderDetails(message);
       else if (step.type === "checkin") renderCheckin();
       else if (step.type === "section" || step.type === "retakeModule") renderModule(step);
       else renderResults(message);
@@ -813,26 +827,27 @@
         }
         return;
       }
+      if (form === "code") {
+        event.preventDefault();
+        const typedCode = normalizeWord(new FormData(event.target).get("code"));
+        if (!typedCode || !WORKSHOP.codes.some((code) => normalizeWord(code) === typedCode)) {
+          renderCode("That code isn't right. Check the screen and try again.");
+          return;
+        }
+        state.workshop = true;
+        state.code = typedCode;
+        advance();
+        return;
+      }
       if (form !== "details") return;
       event.preventDefault();
       const data = new FormData(event.target);
-      const codeInput = String(data.get("code") || "");
-      state.codeInput = codeInput;
       const name = String(data.get("name") || "").trim();
       const email = String(data.get("email") || "").trim();
       state.name = name;
       state.email = email;
       if (!name) { renderDetails("Add your first name to continue."); return; }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { renderDetails("Enter a valid email so we can send your report."); return; }
-      const typedCode = normalizeWord(codeInput);
-      if (typedCode && !WORKSHOP.codes.some((code) => normalizeWord(code) === typedCode)) {
-        renderDetails("That workshop code isn't recognized. Check it, or clear the field to go at your own pace.");
-        return;
-      }
-      state.workshop = Boolean(typedCode);
-      state.code = state.workshop ? typedCode : "";
-      delete state.codeInput;
-      if (!state.workshop) state.unlocked = [];
       advance();
     });
 
