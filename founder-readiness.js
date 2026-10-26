@@ -233,12 +233,12 @@
       .fr-hold{padding:24px 0 8px}
       .fr-gap{margin:0 0 14px;color:#F5F0E3;font-family:'Fraunces',Georgia,serif;font-size:19px;line-height:1.45}
       .fr-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
-      .fr-cta .fr-button{flex:1 1 220px;text-align:center;text-decoration:none}
+      .fr-cta .fr-button{flex:0 0 auto;text-align:center;text-decoration:none}
       .fr-next{margin-top:16px}
       .fr-email{margin-top:20px}
       .fr-reflection{margin:10px 0;color:#F5F0E3;font-size:13px;line-height:1.6}
       .fr-reflection span{display:block;color:#B9B2A0;font-size:11px;margin-bottom:2px}
-      @media(max-width:520px){.fr-pct{gap:6px}.fr-cta{flex-direction:column}}
+      @media(max-width:520px){.fr-pct{gap:6px}.fr-cta{flex-direction:column;align-items:stretch}}
       .fr-details{display:grid;gap:14px;margin-top:8px}
       .fr-field{display:grid;gap:6px;color:#B9B2A0;font-size:12px}
       .fr-wide{width:100%;margin-top:4px}
@@ -521,7 +521,7 @@
       const selected = state.answers[question.id];
       const title = `<h3 class="fr-question-title" id="fr-q-${esc(question.id)}"><span class="fr-number">${index + 1}</span>${esc(question.text)}</h3>`;
       if (question.type === "text") {
-        return `<section class="fr-question" aria-labelledby="fr-q-${esc(question.id)}">${title}<textarea class="fr-text" data-question="${esc(question.id)}" rows="3" placeholder="${esc(question.placeholder)}">${esc(selected || "")}</textarea>${question.placeholder ? `<p class="fr-hint fr-hint-left">${esc(question.placeholder)}</p>` : ""}<p class="fr-hint fr-hint-left">Optional. Your answer is included in your report.</p></section>`;
+        return `<section class="fr-question" aria-labelledby="fr-q-${esc(question.id)}">${title}<textarea class="fr-text" data-question="${esc(question.id)}" rows="3" placeholder="${esc(question.placeholder)}">${esc(selected || "")}</textarea>${question.placeholder ? `<p class="fr-hint fr-hint-left">${esc(question.placeholder)}</p>` : ""}</section>`;
       }
       if (question.type === "capacity") {
         const levels = ["Almost none", "Very little", "Some", "Enough", "Plenty"];
@@ -738,7 +738,6 @@
         <div class="fr-cta">
           <p class="fr-copy">Bring this report. In 30 minutes we'll pick your biggest gap and the first person you need to recruit to fill it.</p>
           <a class="fr-button" href="${esc(bookingLink())}" target="_blank" rel="noopener">Book your free 30-minute session.</a>
-          <a class="fr-button fr-back" href="${esc(frameworkLink())}" target="_blank" rel="noopener">Get the Venture Validation Framework</a>
         </div>
         <p class="fr-copy fr-next">${esc(report.profile.next)}</p>
         ${emailNote}
@@ -751,7 +750,8 @@
         `;
     }
 
-    function render(message = "") {
+    function render(message = "", keepScroll = false) {
+      const keptScroll = panel.scrollTop;
       const step = flow[state.step];
       const lockKey = lockKeyFor(step);
       if (lockKey && !state.unlocked.includes(lockKey)) { renderLock(lockKey, message); return; }
@@ -761,7 +761,7 @@
       else if (step.type === "section" || step.type === "retakeModule") renderModule(step);
       else renderResults(message);
       body.scrollTop = 0;
-      panel.scrollTop = 0;
+      panel.scrollTop = keepScroll ? keptScroll : 0;
     }
 
     function go(delta) {
@@ -872,13 +872,11 @@
       if (!control || control.disabled) return;
       const { action } = control.dataset;
       if (action === "answer") {
-        const scrollTop = body.scrollTop;
         const question = findQuestion(control.dataset.question);
         const numeric = question?.type === "likert" || question?.type === "capacity";
         state.answers[control.dataset.question] = numeric ? Number(control.dataset.value) : control.dataset.value;
         save();
-        render();
-        body.scrollTop = scrollTop;
+        render("", true);
       } else if (action === "multi") {
         const current = Array.isArray(state.answers[control.dataset.question]) ? state.answers[control.dataset.question] : [];
         const value = control.dataset.value;
@@ -887,7 +885,7 @@
         else if (value !== "none") selected = selected.filter((item) => item !== "none");
         state.answers[control.dataset.question] = selected;
         save();
-        render();
+        render("", true);
       } else if (action === "back") {
         go(-1);
       } else if (action === "next") {

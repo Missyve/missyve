@@ -113,8 +113,7 @@ function renderPlainText(payload) {
     "",
     "Bring this report. In 30 minutes we'll pick your biggest gap and the first person you need to recruit to fill it.",
     "Book your free 30-minute session.",
-    payload.bookingUrl || "",
-    `Venture Validation Framework: ${payload.frameworkUrl || ""}`
+    payload.bookingUrl || ""
   ];
   return lines.filter((line) => line !== null && line !== undefined).join("\n");
 }
@@ -137,7 +136,6 @@ function renderHtml(payload) {
   const emptySeats = (payload.emptySupportSeats || []).join(", ") || "None";
   const constraint = payload.capacity && payload.capacity.constraint;
   const bookingUrl = safeLink(payload.bookingUrl);
-  const frameworkUrl = safeLink(payload.frameworkUrl);
   const baselineLine = payload.baselineScorePct === null || payload.baselineScorePct === undefined ? "" : `<p>Previous score baseline: <strong>${escapeHtml(payload.baselineScorePct)}%</strong> (${escapeHtml(signed(payload.gapFromBaselinePct))} points)</p>`;
 
   return `<div style="font-family:Arial,sans-serif;color:#142033;max-width:680px;margin:0 auto;line-height:1.55">
@@ -160,7 +158,6 @@ function renderHtml(payload) {
     <h2>30-Day Experiment</h2><p>${escapeHtml(payload.capacity && payload.capacity.homework || "Live the schedule your audit says you'll need for 30 days before committing years.")}</p>
     <p>Bring this report. In 30 minutes we'll pick your biggest gap and the first person you need to recruit to fill it.</p>
     <p style="margin:28px 0"><a href="${escapeHtml(bookingUrl)}" style="background:#C6A15B;color:#0A1220;text-decoration:none;padding:12px 18px;border-radius:5px;display:inline-block;font-weight:bold">Book your free 30-minute session.</a></p>
-    <p><a href="${escapeHtml(frameworkUrl)}">Venture Validation Framework</a></p>
     <p>In 30 days, retake the assessment with tonight's score as your baseline. Leadership and Daily Rhythm will be added.</p>
   </div>`;
 }
