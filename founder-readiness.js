@@ -19,6 +19,8 @@
   };
   const normalizeWord = (value) => String(value ?? "").replace(/\s+/g, "").toLowerCase();
 
+  const BOOK_URL = "https://www.amazon.com/Cowgirl-Power-Kick-Business-Life/dp/1478948213";
+
   const LABELS = ["Strongly disagree", "Disagree", "Neutral", "Agree", "Strongly agree"];
   const L = (id, text) => ({ id, type: "likert", text, scored: true, required: true });
   const T = (id, text, placeholder = "") => ({ id, type: "text", text, placeholder, scored: false, required: false });
@@ -194,6 +196,8 @@
       .fr-nav{display:flex;gap:10px;margin-top:22px}
       .fr-nav .fr-button{flex:1}
       .fr-back{background:transparent;color:#E3CD9A}
+      .fr-book-card .fr-book-button{display:inline-block;margin-top:14px;padding:9px 16px;font-size:12px;text-decoration:none}
+      .fr-book-card .fr-book-note{margin-top:10px;color:#B9B2A0;font-size:11px;font-style:italic}
       .fr-hint{margin:12px 0 0;color:#B9B2A0;font-size:11px;text-align:center}
       .fr-result-score{display:flex;align-items:baseline;gap:10px;margin:20px 0 14px;color:#E3CD9A}
       .fr-result-score strong{font-family:'Fraunces',Georgia,serif;font-size:48px;font-weight:500;line-height:1}
@@ -735,6 +739,13 @@
         <section class="fr-result-block"><h3>Your missing %</h3>${missingSummaryRows || "<p>No missing % notes were added.</p>"}</section>
         <section class="fr-result-block"><h3>Your first assignment: missing %</h3><p>${esc(assignment)}</p></section>
         <section class="fr-result-block"><h3>30-Day Experiment</h3><p>Live the schedule your audit says you'll need for 30 days before committing years.</p></section>
+        <div class="fr-highlights"><section><h3>Your strengths</h3>${report.strengths.map((item) => `<p>${esc(item.title)}</p>`).join("")}</section><section><h3>Focus areas</h3>${report.focus.map((item) => `<p>${esc(item.title)}</p>`).join("")}</section></div>
+        <section class="fr-result-block fr-book-card">
+          <h3>Your next step: read Cowgirl Power</h3>
+          <p>Gay Gaddis's book is the companion to everything we covered. It's honest, practical, and written by a founder who built her company the hard way.</p>
+          <a class="fr-button fr-back fr-book-button" href="${esc(BOOK_URL)}" target="_blank" rel="noopener noreferrer">Order the book</a>
+          <p class="fr-book-note">At the workshop? You're already getting a signed copy.</p>
+        </section>
         <div class="fr-cta">
           <p class="fr-copy">Bring this report. In 30 minutes we'll pick your biggest gap and the first person you need to recruit to fill it.</p>
           <a class="fr-button" href="${esc(bookingLink())}" target="_blank" rel="noopener">Book your free 30-minute session.</a>
@@ -742,7 +753,6 @@
         <p class="fr-copy fr-next">${esc(report.profile.next)}</p>
         ${emailNote}
         <section class="fr-breakdown"><h3>Readiness by dimension: ${dimensionsLabel}</h3>${rows}</section>
-        <div class="fr-highlights"><section><h3>Your strengths</h3>${report.strengths.map((item) => `<p>${esc(item.title)}</p>`).join("")}</section><section><h3>Focus areas</h3>${report.focus.map((item) => `<p>${esc(item.title)}</p>`).join("")}</section></div>
         ${reflections}
         <section class="fr-result-block"><h3>In 30 days</h3><p>${esc(retakeCopy)}</p></section>
         <p class="fr-quote">"The biggest risk in entrepreneurship is not that your startup fails. The biggest risk is becoming disconnected from yourself while trying to build it."</p>
