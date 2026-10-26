@@ -123,56 +123,84 @@ function renderPlainText(payload) {
 }
 
 function renderHtml(payload) {
-  const sectionRows = (payload.sectionScores || []).map((item) => `<tr><td>${escapeHtml(item.title)}</td><td>${escapeHtml(item.pct)}%</td></tr>`).join("");
-  const retakeRows = (payload.retakeModuleScores || []).map((item) => `<tr><td>${escapeHtml(item.title)} (retake)</td><td>${escapeHtml(item.pct)}%</td></tr>`).join("");
-  const sectionAnswerBlocks = (payload.sectionAnswers || []).map((section) => `<h3>${escapeHtml(section.title)} (${escapeHtml(section.scorePct)}%)</h3><ul>${(section.answers || []).map((item) => `<li><strong>${escapeHtml(answerQuestionLabel(item))}</strong><br>${escapeHtml(Array.isArray(item.answer) ? item.answer.join(", ") : item.answer)}</li>`).join("")}</ul>`).join("");
-  const capacityRows = (payload.capacity && payload.capacity.inventory || []).map((item) => `<li>${escapeHtml(item.name)}: ${escapeHtml(item.score)}/5</li>`).join("");
-  const supportRows = (payload.supportMap || []).map((item) => `<li>${escapeHtml(item.seat)}: ${escapeHtml(item.status || "Not provided")}</li>`).join("");
-  const partnerRows = (payload.partner && payload.partner.unvalidatedItems || []).map((item) => `<li><strong>${escapeHtml(item.question)}</strong><br>${escapeHtml(item.answer)}</li>`).join("") || "<li>No unvalidated items reported.</li>";
-  const missing30Summary = payload.missing30Summary || {};
-  const missing30ReflectionRows = [
-    missing30Summary.mindsetAnswer ? `<li><strong>MINDSET</strong><br>${escapeHtml(missing30Summary.mindsetAnswer)}</li>` : "",
-    ...Object.entries(missing30Summary.sectionReflections || {}).filter(([, answer]) => answer).map(([section, answer]) => `<li><strong>${escapeHtml(section.toUpperCase())}</strong><br>${escapeHtml(answer)}</li>`),
-    `<li><strong>Capacity constraint</strong><br>${missing30Summary.capacityConstraint ? `${escapeHtml(missing30Summary.capacityConstraint.name)} (${escapeHtml(missing30Summary.capacityConstraint.score)}/5)` : "Not identified"}</li>`,
-    `<li><strong>Empty Support seats</strong><br>${escapeHtml((missing30Summary.emptySupportSeats || []).join(", ") || "None")}</li>`,
-    ...(missing30Summary.unvalidatedPartnerItems || []).map((item) => `<li><strong>${escapeHtml(item.question)}</strong><br>${escapeHtml(item.answer)}</li>`)
-  ].filter(Boolean).join("");
-  const emptySeats = (payload.emptySupportSeats || []).join(", ") || "None";
-  const constraint = payload.capacity && payload.capacity.constraint;
-  const bookingUrl = safeLink(payload.bookingUrl);
-  const baselineLine = payload.baselineScorePct === null || payload.baselineScorePct === undefined ? "" : `<p>Previous score baseline: <strong>${escapeHtml(payload.baselineScorePct)}%</strong> (${escapeHtml(signed(payload.gapFromBaselinePct))} points)</p>`;
+  const NAVY = "#142033", GOLD = "#C6A15B", CREAM = "#F5EFE3", MUTED = "#6B6556";
+  const h2 = (text) => `<h2 style="margin:32px 0 10px;font-family:Arial,sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:${MUTED}">${escapeHtml(text)}</h2>`;
+  const h3 = (text) => `<h3 style="margin:20px 0 6px;font-family:Arial,sans-serif;font-size:15px;color:${NAVY}">${text}</h3>`;
+  const list = (items) => `<ul style="margin:0 0 8px;padding-left:20px">${items.join("")}</ul>`;
+  const bar = (title, pct) => `<tr><td style="padding:8px 0 0;font-family:Arial,sans-serif;font-size:14px;color:${NAVY}">${escapeHtml(title)}</td><td align="right" style="padding:8px 0 0;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;color:${NAVY}">${escapeHtml(pct)}%</td></tr><tr><td colspan="2" style="padding:4px 0 6px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#E9E1D0"><tr><td width="${Math.max(0, Math.min(100, Number(pct) || 0))}%" style="background:${GOLD};height:6px;line-height:6px;font-size:0">&nbsp;</td><td style="height:6px;line-height:6px;font-size:0">&nbsp;</td></tr></table></td></tr>`;
+  const box = (heading, text) => `<div style="margin:20px 0;padding:16px 18px;background:#FAF6EC;border-left:3px solid ${GOLD}"><p style="margin:0 0 6px;font-weight:bold;color:${NAVY}">${escapeHtml(heading)}</p><p style="margin:0">${text}</p></div>`;
 
-  return `<div style="font-family:Arial,sans-serif;color:#142033;max-width:680px;margin:0 auto;line-height:1.55">
-    <h1 style="color:#142033">Your Founder Readiness Report</h1>
-    <p>Hi ${escapeHtml(payload.name)},</p>
-    <p>Your final readiness score is <strong>${escapeHtml(finalScore(payload))}%</strong>. Your starting number was <strong>${escapeHtml(startingNumber(payload))}%</strong>, a gap of <strong>${escapeHtml(signed(payload.gapFromStartingNumberPct ?? payload.gap))} points</strong>.</p>
+  const sections = payload.sectionScores || [];
+  const retakes = payload.retakeModuleScores || [];
+  const scoreRows = [...sections, ...retakes].filter((item) => item.pct !== null && item.pct !== undefined).map((item) => bar(item.title, item.pct)).join("");
+  const strengths = (payload.strengths || []).map((item) => `<li>${escapeHtml(item)}</li>`);
+  const focusAreas = (payload.focusAreas || payload.focus || []).map((item) => `<li>${escapeHtml(item)}</li>`);
+
+  const missing = payload.missing30Summary || {};
+  const missingRows = [
+    missing.mindsetAnswer ? `<li><strong>MINDSET</strong><br>${escapeHtml(missing.mindsetAnswer)}</li>` : "",
+    ...Object.entries(missing.sectionReflections || {}).filter(([, answer]) => answer).map(([section, answer]) => `<li><strong>${escapeHtml(section.toUpperCase())}</strong><br>${escapeHtml(answer)}</li>`),
+    `<li><strong>Capacity constraint</strong><br>${missing.capacityConstraint ? `${escapeHtml(missing.capacityConstraint.name)} (${escapeHtml(missing.capacityConstraint.score)}/5)` : "Not identified"}</li>`,
+    `<li><strong>Empty Support seats</strong><br>${escapeHtml((missing.emptySupportSeats || []).join(", ") || "None")}</li>`,
+    ...(missing.unvalidatedPartnerItems || []).map((item) => `<li><strong>${escapeHtml(item.question)}</strong><br>${escapeHtml(item.answer)}</li>`)
+  ].filter(Boolean);
+
+  const sectionAnswerBlocks = (payload.sectionAnswers || []).map((section) => h3(`${escapeHtml(section.title)} (${escapeHtml(section.scorePct)}%)`) + list((section.answers || []).map((item) => `<li style="margin-bottom:8px"><strong>${escapeHtml(answerQuestionLabel(item))}</strong><br>${escapeHtml(Array.isArray(item.answer) ? item.answer.join(", ") : item.answer)}</li>`))).join("");
+  const capacityRows = (payload.capacity && payload.capacity.inventory || []).map((item) => `<li>${escapeHtml(item.name)}: ${escapeHtml(item.score)}/5</li>`);
+  const supportRows = (payload.supportMap || []).map((item) => `<li>${escapeHtml(item.seat)}: ${escapeHtml(item.status || "Not provided")}</li>`);
+  const partnerRows = (payload.partner && payload.partner.unvalidatedItems || []).map((item) => `<li><strong>${escapeHtml(item.question)}</strong><br>${escapeHtml(item.answer)}</li>`);
+  const constraint = payload.capacity && payload.capacity.constraint;
+  const emptySeats = (payload.emptySupportSeats || []).join(", ") || "None";
+  const bookingUrl = safeLink(payload.bookingUrl);
+  const baselineLine = payload.baselineScorePct === null || payload.baselineScorePct === undefined ? "" : `<p style="margin:8px 0 0">Change from your previous score baseline (${escapeHtml(payload.baselineScorePct)}%): ${escapeHtml(signed(payload.gapFromBaselinePct))} points.</p>`;
+
+  return `<div style="background:${CREAM};padding:24px 12px;font-family:Georgia,serif;color:${NAVY};line-height:1.6">
+  <div style="max-width:640px;margin:0 auto;background:#ffffff;border-top:4px solid ${GOLD};padding:32px 28px">
+    <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:13px;color:${MUTED}">MissyVe Founder Readiness</p>
+    <h1 style="margin:0 0 12px;font-size:30px;line-height:1.2;color:${NAVY}">${escapeHtml(payload.name)}, you're ${/^[aeiou]/i.test(profileLabel(payload)) ? "an" : "a"} ${escapeHtml(profileLabel(payload) || "founder in the making")}</h1>
+    <p style="margin:0;font-size:56px;line-height:1.1;color:${GOLD}">${escapeHtml(finalScore(payload))}%</p>
+    <p style="margin:0 0 16px;font-family:Arial,sans-serif;font-size:14px;color:${MUTED}">overall readiness</p>
     <p>No founder is ever 100% ready. A gap between how ready you felt and how you scored isn't a verdict. It's your map.</p>
+    <p style="margin:0">Starting number: <strong>${escapeHtml(startingNumber(payload))}%</strong>. Final score: <strong>${escapeHtml(finalScore(payload))}%</strong>. Gap: <strong>${escapeHtml(signed(payload.gapFromStartingNumberPct ?? payload.gap))} points</strong>.</p>
     ${baselineLine}
-    <h2>${escapeHtml(profileLabel(payload) || "Your profile")}</h2>
     <p>${escapeHtml(profileSummary(payload))}</p>
-    <h2>Readiness scores</h2><table cellpadding="8" cellspacing="0" style="border-collapse:collapse;width:100%"><tbody>${sectionRows}${retakeRows}</tbody></table>
-    <h2>Section answers</h2>${sectionAnswerBlocks}
-    <h2>Capacity inventory</h2><ul>${capacityRows}</ul>
-    <p><strong>Constraint:</strong> ${constraint ? `${escapeHtml(constraint.name)} (${escapeHtml(constraint.score)}/5)` : "Not available"}</p>
-    <p><strong>Hours last month:</strong> ${escapeHtml(payload.capacity && payload.capacity.hoursLastMonth || "Not provided")}<br><strong>Runway:</strong> ${escapeHtml(payload.capacity && payload.capacity.runwayMonths || "Not provided")}</p>
-    <h2>Support map</h2><ul>${supportRows}</ul><p><strong>Gaps to fill before launch:</strong> ${escapeHtml(emptySeats)}</p>
-    <h2>Co-founder / partner items to validate</h2><ul>${partnerRows}</ul>
-    <h2>Your missing %</h2><ul>${missing30ReflectionRows}</ul>
-    <h2>Your first assignment</h2><p>${escapeHtml(firstAssignment(payload))}</p>
-    <h2>30-Day Experiment</h2><p>${escapeHtml(payload.capacity && payload.capacity.homework || "Live the schedule your audit says you'll need for 30 days before committing years.")}</p>
-    <h2>Your strengths</h2><ul>${(payload.strengths || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-    <h2>Focus areas</h2><ul>${(payload.focusAreas || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-    <div style="margin:24px 0;padding:18px 20px;background:#0F1B33;border-left:3px solid #C6A15B;color:#F5F0E3">
-      <h3 style="margin:0 0 8px;color:#E3CD9A;font-size:15px">Your next step: read Cowgirl Power</h3>
+
+    ${h2("Your missing %")}${list(missingRows)}
+    ${box("Your first assignment: missing %", escapeHtml(firstAssignment(payload)))}
+    ${box("30-Day Experiment", escapeHtml(payload.capacity && payload.capacity.homework || "Live the schedule your audit says you'll need for 30 days before committing years."))}
+
+    ${h2("Readiness by dimension")}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tbody>${scoreRows}</tbody></table>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px"><tr>
+      <td valign="top" width="50%"><p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:${MUTED}">Your strengths</p>${list(strengths)}</td>
+      <td valign="top" width="50%"><p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:${MUTED}">Focus areas</p>${list(focusAreas)}</td>
+    </tr></table>
+
+    <div style="margin:28px 0 20px;padding:18px 20px;background:#0F1B33;border-left:3px solid ${GOLD};color:#F5F0E3">
+      <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#E3CD9A">Your next step: read Cowgirl Power</p>
       <p style="margin:0 0 12px;color:#F5F0E3">Gay Gaddis's book is the companion to everything we covered. It's honest, practical, and written by a founder who built her company the hard way.</p>
-      <p style="margin:0"><a href="https://www.amazon.com/Cowgirl-Power-Kick-Business-Life/dp/1478948213" style="color:#E3CD9A;font-weight:bold">Order the book</a></p>
+      <p style="margin:0"><a href="https://www.amazon.com/Cowgirl-Power-Kick-Business-Life/dp/1478948213" target="_blank" rel="noopener noreferrer" style="color:#E3CD9A;font-family:Arial,sans-serif;font-weight:bold">Order the book</a></p>
     </div>
+
     <p>Bring this report. In 30 minutes we'll pick your biggest gap and the first person you need to recruit to fill it.</p>
-    <p style="margin:28px 0"><a href="${escapeHtml(bookingUrl)}" style="background:#C6A15B;color:#0A1220;text-decoration:none;padding:12px 18px;border-radius:5px;display:inline-block;font-weight:bold">Book your free 30-minute session.</a></p>
+    <p style="margin:16px 0"><a href="${escapeHtml(bookingUrl)}" style="background:${GOLD};color:#0A1220;text-decoration:none;padding:12px 20px;border-radius:5px;display:inline-block;font-family:Arial,sans-serif;font-size:14px;font-weight:bold">Book your free 30-minute session.</a></p>
     <p>${escapeHtml(payload.next || "")}</p>
-    <h2>In 30 days</h2><p>Retake in 30 days with tonight's ${escapeHtml(finalScore(payload))}% score as your baseline. The retake adds Leadership and Daily Rhythm.</p>
-    <p style="font-style:italic">"The biggest risk in entrepreneurship is not that your startup fails. The biggest risk is becoming disconnected from yourself while trying to build it."</p>
-  </div>`;
+    ${h2("In 30 days")}<p style="margin:0">Retake in 30 days with tonight's ${escapeHtml(finalScore(payload))}% score as your baseline. The retake adds Leadership and Daily Rhythm.</p>
+
+    <hr style="border:none;border-top:1px solid #E9E1D0;margin:36px 0 0">
+    ${h2("Full breakdown")}
+    ${h3("Your answers by section")}${sectionAnswerBlocks}
+    ${h3("Capacity inventory")}${list(capacityRows)}
+    <p style="margin:0 0 6px"><strong>Constraint:</strong> ${constraint ? `${escapeHtml(constraint.name)} (${escapeHtml(constraint.score)}/5)` : "Not available"}</p>
+    <p style="margin:0"><strong>Hours last month:</strong> ${escapeHtml(payload.capacity && payload.capacity.hoursLastMonth || "Not provided")}<br><strong>Runway:</strong> ${escapeHtml(payload.capacity && payload.capacity.runwayMonths || "Not provided")}<br><strong>When work has no owner:</strong> ${escapeHtml(payload.capacity && payload.capacity.unownedWorkResponse || "Not provided")}</p>
+    ${h3("Support map")}${list(supportRows)}
+    <p style="margin:0"><strong>Gaps to fill before launch:</strong> ${escapeHtml(emptySeats)}</p>
+    ${h3("Co-founder / partner items to validate")}${list(partnerRows.length ? partnerRows : ["<li>No unvalidated items reported.</li>"])}
+
+    <p style="margin:32px 0 0;font-style:italic;color:${MUTED}">"The biggest risk in entrepreneurship is not that your startup fails. The biggest risk is becoming disconnected from yourself while trying to build it."</p>
+    <p style="margin:24px 0 0;font-family:Arial,sans-serif;font-size:14px">Melissa Wood<br>MissyVe | <a href="mailto:melissa@missyve.co">melissa@missyve.co</a></p>
+  </div>
+</div>`;
 }
 
 function answerQuestionLabel(item) {
