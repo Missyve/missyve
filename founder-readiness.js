@@ -197,7 +197,6 @@
       .fr-nav .fr-button{flex:1}
       .fr-back{background:transparent;color:#E3CD9A}
       .fr-book-card .fr-book-button{display:inline-block;margin-top:14px;padding:9px 16px;font-size:12px;text-decoration:none}
-      .fr-book-card .fr-book-note{margin-top:10px;color:#B9B2A0;font-size:11px;font-style:italic}
       .fr-hint{margin:12px 0 0;color:#B9B2A0;font-size:11px;text-align:center}
       .fr-result-score{display:flex;align-items:baseline;gap:10px;margin:20px 0 14px;color:#E3CD9A}
       .fr-result-score strong{font-family:'Fraunces',Georgia,serif;font-size:48px;font-weight:500;line-height:1}
@@ -744,7 +743,6 @@
           <h3>Your next step: read Cowgirl Power</h3>
           <p>Gay Gaddis's book is the companion to everything we covered. It's honest, practical, and written by a founder who built her company the hard way.</p>
           <a class="fr-button fr-back fr-book-button" href="${esc(BOOK_URL)}" target="_blank" rel="noopener noreferrer">Order the book</a>
-          <p class="fr-book-note">At the workshop? You're already getting a signed copy.</p>
         </section>
         <div class="fr-cta">
           <p class="fr-copy">Bring this report. In 30 minutes we'll pick your biggest gap and the first person you need to recruit to fill it.</p>

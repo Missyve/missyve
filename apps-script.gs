@@ -114,7 +114,6 @@ function renderPlainText(payload) {
     "Your next step: read Cowgirl Power",
     "Gay Gaddis's book is the companion to everything we covered. It's honest, practical, and written by a founder who built her company the hard way.",
     "Order the book: https://www.amazon.com/Cowgirl-Power-Kick-Business-Life/dp/1478948213",
-    "At the workshop? You're already getting a signed copy.",
     "",
     "Bring this report. In 30 minutes we'll pick your biggest gap and the first person you need to recruit to fill it.",
     "Book your free 30-minute session.",
@@ -161,15 +160,18 @@ function renderHtml(payload) {
     <h2>Your missing %</h2><ul>${missing30ReflectionRows}</ul>
     <h2>Your first assignment</h2><p>${escapeHtml(firstAssignment(payload))}</p>
     <h2>30-Day Experiment</h2><p>${escapeHtml(payload.capacity && payload.capacity.homework || "Live the schedule your audit says you'll need for 30 days before committing years.")}</p>
+    <h2>Your strengths</h2><ul>${(payload.strengths || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+    <h2>Focus areas</h2><ul>${(payload.focusAreas || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
     <div style="margin:24px 0;padding:18px 20px;background:#0F1B33;border-left:3px solid #C6A15B;color:#F5F0E3">
       <h3 style="margin:0 0 8px;color:#E3CD9A;font-size:15px">Your next step: read Cowgirl Power</h3>
       <p style="margin:0 0 12px;color:#F5F0E3">Gay Gaddis's book is the companion to everything we covered. It's honest, practical, and written by a founder who built her company the hard way.</p>
-      <p style="margin:0 0 10px"><a href="https://www.amazon.com/Cowgirl-Power-Kick-Business-Life/dp/1478948213" style="color:#E3CD9A;font-weight:bold">Order the book</a></p>
-      <p style="margin:0;font-size:12px;font-style:italic;color:#B9B2A0">At the workshop? You're already getting a signed copy.</p>
+      <p style="margin:0"><a href="https://www.amazon.com/Cowgirl-Power-Kick-Business-Life/dp/1478948213" style="color:#E3CD9A;font-weight:bold">Order the book</a></p>
     </div>
     <p>Bring this report. In 30 minutes we'll pick your biggest gap and the first person you need to recruit to fill it.</p>
     <p style="margin:28px 0"><a href="${escapeHtml(bookingUrl)}" style="background:#C6A15B;color:#0A1220;text-decoration:none;padding:12px 18px;border-radius:5px;display:inline-block;font-weight:bold">Book your free 30-minute session.</a></p>
-    <p>In 30 days, retake the assessment with tonight's score as your baseline. Leadership and Daily Rhythm will be added.</p>
+    <p>${escapeHtml(payload.next || "")}</p>
+    <h2>In 30 days</h2><p>Retake in 30 days with tonight's ${escapeHtml(finalScore(payload))}% score as your baseline. The retake adds Leadership and Daily Rhythm.</p>
+    <p style="font-style:italic">"The biggest risk in entrepreneurship is not that your startup fails. The biggest risk is becoming disconnected from yourself while trying to build it."</p>
   </div>`;
 }
 
