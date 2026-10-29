@@ -10,15 +10,6 @@
   // founder. Leave blank and results stay on the device only.
   const RESULTS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxtnhckqHy2eyVJnMOYl1WR-jOjqzd4e7VxL5EtvUtJiMjiAJ8tT4NK-0Jb28gV2_bIsQ/exec";
 
-  // Workshop mode: edit codes and unlock words here for future events.
-  // Matching ignores case and spaces. Section words follow the order of SECTIONS.
-  const WORKSHOP = {
-    codes: ["femmefounders26"],
-    sectionWords: ["WHY", "REALITY", "MINDSET", "CAPACITY", "SUPPORT", "SUSTAIN"],
-    resultsWord: "READY"
-  };
-  const normalizeWord = (value) => String(value ?? "").replace(/\s+/g, "").toLowerCase();
-
   const BOOK_URL = "https://www.amazon.com/Cowgirl-Power-Kick-Business-Life/dp/1478948213";
 
   const LABELS = ["Strongly disagree", "Disagree", "Neutral", "Agree", "Strongly agree"];
@@ -339,9 +330,8 @@
     }
     function freshState({ name = "", email = "", retake = false, baselinePct = null } = {}) {
       return {
-        attemptId: newId(), createdAt: new Date().toISOString(), step: 0, flowVersion: 2, answers: {},
+        attemptId: newId(), createdAt: new Date().toISOString(), step: 0, flowVersion: 3, answers: {},
         startingNumber: null, baselinePct, retake, sent: false, name, email, completedAt: null, scorePct: null,
-        workshop: false, code: "", unlocked: []
       };
     }
     function save() {
@@ -353,7 +343,7 @@
       try { localStorage.setItem(storageKey(), JSON.stringify(attemptStore)); } catch (e) { /* storage unavailable */ }
     }
     function buildFlow() {
-      const steps = [...(state?.retake ? [] : [{ type: "code" }]), { type: "details" }, { type: "checkin" }];
+      const steps = [{ type: "details" }, { type: "checkin" }];
       SECTIONS.forEach((section) => steps.push({ type: "section", id: section.id }));
       if (state?.retake) RETAKE_MODULES.forEach((module) => steps.push({ type: "retakeModule", id: module.id }));
       steps.push({ type: "results" });
@@ -430,10 +420,10 @@
       const current = attemptStore.attempts.find((attempt) => attempt.attemptId === attemptStore.currentAttemptId);
       if (current && !current.completedAt) {
         state = JSON.parse(JSON.stringify(current));
-        if (!state.flowVersion || state.flowVersion < 1) state.step = migrateSavedStep(state);
-        if ((state.flowVersion || 0) < 2 && !state.retake) state.step += 1;
-        state.flowVersion = 2;
-        state.unlocked = state.unlocked || [];
+        const savedFlowVersion = Number(state.flowVersion) || 0;
+        if (savedFlowVersion < 1) state.step = migrateSavedStep(state);
+        else if (savedFlowVersion === 2 && !state.retake) state.step = Math.max(0, state.step - 1);
+        state.flowVersion = 3;
         flow = buildFlow();
         state.step = Math.min(state.step, flow.length - 1);
         save();
@@ -451,18 +441,6 @@
         <div class="fr-progress-track" role="progressbar" aria-label="Assessment progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><div class="fr-progress-fill" style="width:${pct}%"></div></div>`;
     }
 
-    function renderCode(message = "") {
-      body.innerHTML = `
-        ${progressHeader("Before we begin")}
-        <div class="fr-module"><h2 id="fr-dialog-title">Enter your workshop code</h2><p>Type the code shown on screen to begin.</p></div>
-        <form class="fr-details" data-form="code" novalidate>
-          <label class="fr-field"><span>Workshop code</span><input class="fr-code" type="text" name="code" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Workshop code" value="${esc(state.code)}" required></label>
-          <p class="fr-error" role="alert">${esc(message)}</p>
-          <button class="fr-button fr-wide" type="submit">Continue</button>
-        </form>`;
-      body.querySelector('input[name="code"]').focus();
-    }
-
     function renderDetails(message = "") {
       body.innerHTML = `
         ${progressHeader("Before we begin")}
@@ -474,35 +452,6 @@
           <button class="fr-button fr-wide" type="submit">Start the assessment</button>
           <p class="fr-hint">We'll only use your email to send your report and follow up about founder coaching. Unsubscribe anytime.</p>
         </form>`;
-    }
-
-    function lockKeyFor(step) {
-      if (!state.workshop || state.retake) return null;
-      if (step.type === "section") return step.id;
-      if (step.type === "results") return "results";
-      return null;
-    }
-    function expectedWord(key) {
-      if (key === "results") return WORKSHOP.resultsWord;
-      return WORKSHOP.sectionWords[SECTIONS.findIndex((section) => section.id === key)];
-    }
-    function renderLock(key, message = "") {
-      const isResults = key === "results";
-      const number = SECTIONS.findIndex((section) => section.id === key) + 1;
-      const heading = isResults ? "Almost there" : `Section ${number} of ${SECTIONS.length} is locked`;
-      const text = isResults
-        ? "Almost there. Type the word on screen to see your results."
-        : "Wait for Melissa to finish this lesson, then type the word on screen.";
-      body.innerHTML = `
-        ${progressHeader(isResults ? "Final results" : `Section ${number} of ${SECTIONS.length}`)}
-        <div class="fr-module"><h2 id="fr-dialog-title">${esc(heading)}</h2><p>${esc(text)}</p></div>
-        <form class="fr-details" data-form="unlock" novalidate>
-          <label class="fr-field"><span>Word on screen</span><input class="fr-code" type="text" name="word" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Unlock word"></label>
-          <p class="fr-error" role="alert">${esc(message)}</p>
-          <button class="fr-button fr-wide" type="submit">Unlock</button>
-        </form>
-        <nav class="fr-nav" aria-label="Assessment navigation"><button class="fr-button fr-back" type="button" data-action="back">Back</button></nav>`;
-      body.querySelector('input[name="word"]').focus();
     }
 
     function renderCheckin() {
@@ -640,7 +589,7 @@
         schemaVersion: 3,
         attemptId: state.attemptId,
         mode: state.retake ? "retake" : "self-paced",
-        code: state.workshop ? state.code : "self-paced",
+        code: "self-paced",
         name: state.name,
         email: state.email,
         startingNumberPct: state.startingNumber,
@@ -761,10 +710,7 @@
     function render(message = "", keepScroll = false) {
       const keptScroll = panel.scrollTop;
       const step = flow[state.step];
-      const lockKey = lockKeyFor(step);
-      if (lockKey && !state.unlocked.includes(lockKey)) { renderLock(lockKey, message); return; }
-      if (step.type === "code") renderCode(message);
-      else if (step.type === "details") renderDetails(message);
+      if (step.type === "details") renderDetails(message);
       else if (step.type === "checkin") renderCheckin();
       else if (step.type === "section" || step.type === "retakeModule") renderModule(step);
       else renderResults(message);
@@ -822,31 +768,6 @@
 
     body.addEventListener("submit", (event) => {
       const form = event.target.dataset.form;
-      if (form === "unlock") {
-        event.preventDefault();
-        const key = lockKeyFor(flow[state.step]);
-        const typed = new FormData(event.target).get("word");
-        if (key && normalizeWord(typed) === normalizeWord(expectedWord(key))) {
-          if (!state.unlocked.includes(key)) state.unlocked.push(key);
-          save();
-          render();
-        } else {
-          renderLock(key, "Not quite. Check the screen and try again.");
-        }
-        return;
-      }
-      if (form === "code") {
-        event.preventDefault();
-        const typedCode = normalizeWord(new FormData(event.target).get("code"));
-        if (!typedCode || !WORKSHOP.codes.some((code) => normalizeWord(code) === typedCode)) {
-          renderCode("That code isn't right. Check the screen and try again.");
-          return;
-        }
-        state.workshop = true;
-        state.code = typedCode;
-        advance();
-        return;
-      }
       if (form !== "details") return;
       event.preventDefault();
       const data = new FormData(event.target);

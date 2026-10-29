@@ -54,7 +54,7 @@ function appendResponse(sheet, payload) {
   sheet.appendRow([
     payload.submittedAt || new Date().toISOString(),
     payload.attemptId,
-    payload.mode || "workshop",
+    payload.mode || "self-paced",
     payload.name || "",
     payload.email,
     payload.startingNumberPct,
