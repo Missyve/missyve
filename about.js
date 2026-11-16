@@ -43,8 +43,12 @@
       .about-copy a{color:var(--gold-300)}
       .portfolio{max-width:none;text-align:center}
       .portfolio .portfolio-label{margin:0 0 24px;color:var(--cream-100);font-family:'Hanken Grotesk',sans-serif;font-size:clamp(1.6rem,2.7vw,2rem);font-weight:700;letter-spacing:normal;line-height:1.12;text-transform:none}
-      .portfolio-links{flex-wrap:wrap}
+      .portfolio-links{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:start;gap:clamp(16px,3vw,32px)}
+      .portfolio-links a{height:100%;min-width:0;text-align:center}
       .portfolio-links .mark{width:64px;height:64px}
+      .portfolio-links .name{font-size:14px;font-weight:600}
+      .portfolio-role{color:var(--gold-300);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+      .portfolio-description{color:rgba(245,240,227,.7);font-size:12px;line-height:1.5}
       .speaking-dialog{width:calc(100% - 32px);max-width:520px;max-height:calc(100dvh - 32px);padding:36px 32px 30px;border:1px solid var(--line);border-radius:10px;background:var(--navy-800);color:var(--cream-100);box-shadow:0 24px 60px rgba(0,0,0,.45)}
       .speaking-dialog::backdrop{background:rgba(0,0,0,.72)}
       .speaking-dialog .field select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--navy-800);color:var(--cream-100);font:inherit;font-size:16px}
@@ -53,7 +57,7 @@
       .speaking-dialog [hidden]{display:none}
       .speaking-dialog .form-error a{color:var(--gold-300)}
       @media(max-width:520px){.speaking-dialog{padding:32px 20px 24px}}
-      @media(max-width:600px){.about-layout{grid-template-columns:1fr}.about-portrait{margin:auto}.about-actions{align-items:flex-start;flex-direction:column}}
+      @media(max-width:600px){.about-layout{grid-template-columns:1fr}.about-portrait{margin:auto}.about-actions{align-items:flex-start;flex-direction:column}.portfolio-links{grid-template-columns:repeat(2,minmax(0,1fr))}}
       @media(prefers-reduced-motion:reduce){.about-primary{transition:none}.about-primary:hover{transform:none}}
     `;
     document.head.append(style);
@@ -70,21 +74,21 @@
             <span class="about-placeholder" hidden>Headshot coming soon</span>
           </div>
           <ul class="about-credentials">
-            <li><a href="https://www.forbes.com/advisor/business/ai/lovable-review/?" target="_blank" rel="noopener noreferrer">Quoted in Forbes Advisor, 2026 <span aria-hidden="true">&rarr;</span></a></li>
+            <li><a href="https://www.forbes.com/advisor/business/ai/lovable-review/" target="_blank" rel="noopener noreferrer">Quoted in Forbes Advisor, 2026 <span aria-hidden="true">&rarr;</span></a></li>
           </ul>
         </div>
         <div class="about-content">
-          <h2 id="about-title">Meet Melissa (Missy) Wood</h2>
-          <p class="about-subhead">Founder of Curaite | FIESTA Board Advisor | SXSW Startup Mentor</p>
+          <h2 id="about-title">Hi! I'm Melissa (Missy) Wood</h2>
+          <p class="about-subhead">Founder of Curaite | SXSW Startup Mentor | FIESTA Board Advisor</p>
           <div class="about-copy">
             <p>I'm a serial entrepreneur with 30 years in startups, including work with startups acquired by Apple and Google. My most recent company, Curaite, reached 3,400 users in its first 3 weeks.</p>
-            <p>Now I help first-time founders get honest answers early, validate fast, and bring the right people with them.</p>
+            <p>I created the Venture Validation Framework™ to help first-time founders get honest answers early, validate fast, and bring the right people with them.</p>
           </div>
           <p class="about-engagements-label">Recent speaking engagements</p>
-          <p class="about-engagements-copy">SXSW · Austin Tech Week, Women in Tech Kickoff · University of Illinois MBA · Creative Collective Founders Night · BBB AI Made Practical Conference</p>
+          <p class="about-engagements-copy">Austin Tech Week, Women in Tech Kickoff · University of Illinois MBA · Creative Collective Founders Night · BBB AI Made Practical Conference</p>
           <div class="about-actions">
             <button class="submit-btn about-button about-primary" type="button" aria-haspopup="dialog">Book me to speak <span aria-hidden="true">&rarr;</span></button>
-            <a class="submit-btn about-button about-secondary" href="https://calendly.com/melissawood-missyve/30min" target="_blank" rel="noopener noreferrer">Book 30 minutes</a>
+            <a class="submit-btn about-button about-secondary" href="https://calendly.com/melissawood-missyve/virtual-coffee-with-melissa?back=1&amp;month=2026-11" target="_blank" rel="noopener noreferrer">Book Virtual Chat</a>
             <div class="about-contact"></div>
           </div>
         </div>
@@ -112,12 +116,38 @@
       const heading = document.createElement("h2");
       heading.className = portfolioLabel.className;
       heading.id = "portfolio-title";
-      heading.textContent = "MISSYVE Portfolio";
+      heading.textContent = "Companies I've Started";
       portfolioLabel.replaceWith(heading);
       portfolio.setAttribute("role", "region");
       portfolio.setAttribute("aria-labelledby", heading.id);
     } else {
       console.error("Portfolio title could not be updated: label not found.");
+    }
+    const companies = [
+      { host: "curaite.events", role: "Founder", description: "AI event discovery app with 3,400+ users in its first 3 weeks of launch." },
+      { host: "thefridgeschedule.com", role: "Founder", description: "The AI family calendar families love and even teens will use." },
+      { host: "formus.ai", role: "Founder", description: "AI platform that streamlined home renovation workflows." },
+      { host: "intruckmba.com", role: "Co-founder", description: "Podcast and workshops for tradesmen going out on their own." }
+    ];
+    for (const company of companies) {
+      const link = Array.from(portfolio.querySelectorAll(".portfolio-links a")).find((item) => new URL(item.href).hostname === company.host);
+      if (!link) {
+        console.error(`Portfolio tile not found: ${company.host}`);
+        continue;
+      }
+      link.href = `https://${company.host}/`;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      const name = link.querySelector(".name").textContent;
+      link.setAttribute("aria-label", `${name}, ${company.role}. ${company.description}`);
+      link.title = company.description;
+      const role = document.createElement("span");
+      role.className = "portfolio-role";
+      role.textContent = company.role;
+      const description = document.createElement("span");
+      description.className = "portfolio-description";
+      description.textContent = company.description;
+      link.append(role, description);
     }
 
     const dialog = document.createElement("dialog");

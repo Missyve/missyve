@@ -48,7 +48,7 @@
       <div class="workshop-feature-content">
         <div>
           <p class="workshop-feature-label">Workshop series</p>
-          <h2 id="workshop-feature-title">Spilling the Tea On Becoming a Successful Founder</h2>
+          <h2 id="workshop-feature-title">Spilling the Tea on Becoming a Successful Founder</h2>
           <p>Building with Cowgirl Grit: a quarterly workshop series for aspiring and first-time female founders. Join the waitlist for dates.</p>
           <details class="workshop-details">
             <summary class="cta"><span class="workshop-more">Learn more</span><span class="workshop-less">Show less</span> <span aria-hidden="true">&rarr;</span></summary>
