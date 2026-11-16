@@ -331,7 +331,7 @@
     }
     function freshState({ name = "", email = "", retake = false, baselinePct = null } = {}) {
       return {
-        attemptId: newId(), createdAt: new Date().toISOString(), step: 0, flowVersion: 3, answers: {},
+        attemptId: newId(), createdAt: new Date().toISOString(), step: 0, flowVersion: 4, answers: {},
         startingNumber: null, baselinePct, retake, sent: false, name, email, completedAt: null, scorePct: null,
       };
     }
@@ -344,10 +344,10 @@
       try { localStorage.setItem(storageKey(), JSON.stringify(attemptStore)); } catch (e) { /* storage unavailable */ }
     }
     function buildFlow() {
-      const steps = [{ type: "details" }, { type: "checkin" }];
+      const steps = [{ type: "intro" }, { type: "checkin" }];
       SECTIONS.forEach((section) => steps.push({ type: "section", id: section.id }));
       if (state?.retake) RETAKE_MODULES.forEach((module) => steps.push({ type: "retakeModule", id: module.id }));
-      steps.push({ type: "results" });
+      steps.push({ type: "details" }, { type: "results" });
       return steps;
     }
     function migrateSavedStep(savedState) {
@@ -424,7 +424,10 @@
         const savedFlowVersion = Number(state.flowVersion) || 0;
         if (savedFlowVersion < 1) state.step = migrateSavedStep(state);
         else if (savedFlowVersion === 2 && !state.retake) state.step = Math.max(0, state.step - 1);
-        state.flowVersion = 3;
+        if (savedFlowVersion < 4 && state.step >= 2 + SECTIONS.length + (state.retake ? RETAKE_MODULES.length : 0)) {
+          state.step = 2 + SECTIONS.length + (state.retake ? RETAKE_MODULES.length : 0);
+        }
+        state.flowVersion = 4;
         flow = buildFlow();
         state.step = Math.min(state.step, flow.length - 1);
         save();
@@ -442,15 +445,23 @@
         <div class="fr-progress-track" role="progressbar" aria-label="Assessment progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><div class="fr-progress-fill" style="width:${pct}%"></div></div>`;
     }
 
-    function renderDetails(message = "") {
+    function renderIntro() {
       body.innerHTML = `
         ${progressHeader("Before we begin")}
-        <div class="fr-module"><h2 id="fr-dialog-title">Where should we send your report?</h2><p>When you finish, we'll email you your full readiness report: your score, your strengths, your focus areas, and your first assignment.</p></div>
+        <div class="fr-module"><h2 id="fr-dialog-title">Founder readiness assessment</h2><p>About 10 minutes. Six readiness dimensions. Private.</p></div>
+        <button class="fr-button fr-wide" type="button" data-action="next">Start the assessment</button>`;
+    }
+
+    function renderDetails(message = "") {
+      body.innerHTML = `
+        ${progressHeader("Your results are ready")}
+        <div class="fr-module"><h2 id="fr-dialog-title">Where should we send your report?</h2><p>Your results are ready. Where should we send your full report? You'll get your score, your strengths, your focus areas, and your first assignment.</p></div>
         <form class="fr-details" data-form="details" novalidate>
           <label class="fr-field"><span>First name</span><input class="fr-code" type="text" name="name" autocomplete="given-name" value="${esc(state.name)}" required></label>
           <label class="fr-field"><span>Email</span><input class="fr-code" type="email" name="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" enterkeyhint="done" value="${esc(state.email)}" required></label>
           <p class="fr-error" role="alert">${message}</p>
-          <button class="fr-button fr-wide" type="submit">Start the assessment</button>
+          <button class="fr-button fr-wide" type="submit">See my results</button>
+          <button class="fr-button fr-back fr-wide" type="button" data-action="back">Back</button>
           <p class="fr-hint">We'll only use your email to send your report and follow up about founder coaching. Unsubscribe anytime.</p>
         </form>`;
     }
@@ -500,7 +511,7 @@
       const questions = isSection ? sectionQuestions(section) : module.questions;
       const complete = isSection ? sectionComplete(section) : questions.every(questionComplete);
       const next = flow[state.step + 1];
-      const nextLabel = next.type === "results" ? "See my results" : next.type === "hold" ? "Finish section" : "Next";
+      const nextLabel = next.type === "details" ? "Continue" : next.type === "hold" ? "Finish section" : "Next";
       const label = isSection ? `Section ${SECTIONS.indexOf(section) + 1} of ${SECTIONS.length}: ${section.name}` : `30-day retake: ${module.title}`;
       const scoredCount = questions.filter((question) => question.scored).length;
       body.innerHTML = `
@@ -710,8 +721,13 @@
 
     function render(message = "", keepScroll = false) {
       const keptScroll = panel.scrollTop;
+      if (flow[state.step].type === "results" && (!state.name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.email || ""))) {
+        state.step = flow.findIndex((item) => item.type === "details");
+        save();
+      }
       const step = flow[state.step];
-      if (step.type === "details") renderDetails(message);
+      if (step.type === "intro") renderIntro();
+      else if (step.type === "details") renderDetails(message);
       else if (step.type === "checkin") renderCheckin();
       else if (step.type === "section" || step.type === "retakeModule") renderModule(step);
       else renderResults(message);

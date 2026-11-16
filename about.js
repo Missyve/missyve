@@ -20,13 +20,15 @@
       .about-placeholder{padding:24px;color:var(--cream-300);font-size:13px;text-align:center;line-height:1.6}
       .about-placeholder[hidden]{display:none}
       .about-credentials{list-style:none;padding:0;margin:16px 0 0;color:var(--gold-300);font-size:10px;font-weight:600;letter-spacing:.14em;line-height:1.6;text-transform:uppercase}
-      .about-credentials li{padding:10px 0;border-bottom:1px solid var(--line)}
+      .about-credentials li{padding:10px 0}
       .about-credentials a{color:inherit;text-decoration:none}
       .about-credentials a:hover{text-decoration:underline}
       .about-credentials a:focus-visible{outline:2px solid var(--gold-300);outline-offset:3px}
       .about h2{margin:0 0 16px;color:var(--cream-100);font-family:'Hanken Grotesk',sans-serif;font-size:clamp(1.6rem,2.7vw,2rem);line-height:1.12}
       .about-subhead,.about-copy p{margin:0 0 16px;color:var(--cream-100);font-size:14px;line-height:1.7}
       .about-subhead{color:var(--gold-300);font-weight:600}
+      .about-engagements-label{margin:8px 0 8px;color:var(--gold-300);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+      .about-engagements-copy{margin:0;color:var(--cream-100);font-size:13px;line-height:1.7}
       .about-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:24px}
       .about-contact{display:flex;align-items:center;gap:16px}
       .about-contact .social{margin:0;opacity:1;animation:none}
@@ -39,8 +41,18 @@
       .about-secondary:hover:not(:disabled){background:rgba(198,161,91,.15)}
       .about-button:focus-visible,.about-copy a:focus-visible,.about-credentials a:focus-visible{outline:2px solid var(--gold-300);outline-offset:3px}
       .about-copy a{color:var(--gold-300)}
-      .about-content .portfolio{max-width:100%;border-top:0;text-align:left}
-      .about-content .portfolio-links{justify-content:flex-start;flex-wrap:wrap}
+      .portfolio{max-width:none;text-align:center}
+      .portfolio .portfolio-label{margin:0 0 24px;color:var(--cream-100);font-family:'Hanken Grotesk',sans-serif;font-size:clamp(1.6rem,2.7vw,2rem);font-weight:700;letter-spacing:normal;line-height:1.12;text-transform:none}
+      .portfolio-links{flex-wrap:wrap}
+      .portfolio-links .mark{width:64px;height:64px}
+      .speaking-dialog{width:calc(100% - 32px);max-width:520px;max-height:calc(100dvh - 32px);padding:36px 32px 30px;border:1px solid var(--line);border-radius:10px;background:var(--navy-800);color:var(--cream-100);box-shadow:0 24px 60px rgba(0,0,0,.45)}
+      .speaking-dialog::backdrop{background:rgba(6,10,18,.72)}
+      .speaking-dialog .field select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--navy-800);color:var(--cream-100);font:inherit;font-size:16px}
+      .speaking-dialog .field input,.speaking-dialog .field textarea{font-size:16px}
+      .speaking-dialog :focus-visible{outline:2px solid var(--gold-300);outline-offset:3px}
+      .speaking-dialog [hidden]{display:none}
+      .speaking-dialog .form-error a{color:var(--gold-300)}
+      @media(max-width:520px){.speaking-dialog{padding:32px 20px 24px}}
       @media(max-width:600px){.about-layout{grid-template-columns:1fr}.about-portrait{margin:auto}.about-actions{align-items:flex-start;flex-direction:column}}
       @media(prefers-reduced-motion:reduce){.about-primary{transition:none}.about-primary:hover{transform:none}}
     `;
@@ -59,18 +71,19 @@
           </div>
           <ul class="about-credentials">
             <li><a href="https://www.forbes.com/advisor/business/ai/lovable-review/?" target="_blank" rel="noopener noreferrer">Quoted in Forbes Advisor, 2026 <span aria-hidden="true">&rarr;</span></a></li>
-            <li>SXSW Startup Mentor</li>
-            <li><a href="https://fiesta.community" target="_blank" rel="noopener noreferrer">FIESTA</a> Board Advisor</li>
           </ul>
         </div>
         <div class="about-content">
           <h2 id="about-title">Meet Melissa (Missy) Wood</h2>
-          <p class="about-subhead">Founder of Curaite | Creator of the Venture Validation Framework™</p>
+          <p class="about-subhead">Founder of Curaite | FIESTA Board Advisor | SXSW Startup Mentor</p>
           <div class="about-copy">
-            <p>Award-winning serial entrepreneur with 30 years in entrepreneurship, including work with startups acquired by Apple and Google. My recent startup, Curaite, reached 3,400 users in 3 weeks, and now I help first-time founders validate fast, build smart, and bring the right people with them. I'm an official SXSW Startup Mentor and a FIESTA Board Advisor, leading FIESTA's expansion to Round Rock.</p>
+            <p>I'm a serial entrepreneur with 30 years in startups, including work with startups acquired by Apple and Google. My most recent company, Curaite, reached 3,400 users in its first 3 weeks.</p>
+            <p>Now I help first-time founders get honest answers early, validate fast, and bring the right people with them.</p>
           </div>
+          <p class="about-engagements-label">Recent speaking engagements</p>
+          <p class="about-engagements-copy">SXSW · Austin Tech Week, Women in Tech Kickoff · University of Illinois MBA · Creative Collective Founders Night · BBB AI Made Practical Conference</p>
           <div class="about-actions">
-            <a class="submit-btn about-button about-primary" href="/speaking">Book me to speak <span aria-hidden="true">&rarr;</span></a>
+            <button class="submit-btn about-button about-primary" type="button" aria-haspopup="dialog">Book me to speak <span aria-hidden="true">&rarr;</span></button>
             <a class="submit-btn about-button about-secondary" href="https://calendly.com/melissawood-missyve/30min" target="_blank" rel="noopener noreferrer">Book 30 minutes</a>
             <div class="about-contact"></div>
           </div>
@@ -94,7 +107,71 @@
       console.error("Could not move the footer contact links to the About section.");
     }
     portfolio.before(section);
-    section.querySelector(".about-content").append(portfolio);
+    const portfolioLabel = portfolio.querySelector(".portfolio-label");
+    if (portfolioLabel) {
+      const heading = document.createElement("h2");
+      heading.className = portfolioLabel.className;
+      heading.id = "portfolio-title";
+      heading.textContent = "MISSYVE Portfolio";
+      portfolioLabel.replaceWith(heading);
+      portfolio.setAttribute("role", "region");
+      portfolio.setAttribute("aria-labelledby", heading.id);
+    } else {
+      console.error("Portfolio title could not be updated: label not found.");
+    }
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "speaking-dialog";
+    dialog.setAttribute("aria-labelledby", "speaking-dialog-title");
+    dialog.innerHTML = `
+      <button class="modal-close" type="button" aria-label="Close speaking request">&times;</button>
+      <h2 class="modal-title" id="speaking-dialog-title">Book Melissa to speak</h2>
+      <div class="speaking-form-content">
+        <p class="modal-eyebrow">Speaking inquiry</p>
+        <form id="speakingForm">
+          <label class="field"><span>Name</span><input type="text" name="name" autocomplete="name" maxlength="200" required autofocus></label>
+          <label class="field"><span>Email</span><input type="email" name="email" autocomplete="email" maxlength="254" required></label>
+          <label class="field"><span>Organization</span><input type="text" name="organization" autocomplete="organization" maxlength="200" required></label>
+          <label class="field"><span>Event date (optional)</span><input type="date" name="eventDate"></label>
+          <label class="field"><span>Expected audience size (optional)</span><select name="audience"><option value="">Select an audience size</option><option>Under 25</option><option>25 to 50</option><option>50 to 100</option><option>100+</option></select></label>
+          <label class="field"><span>Format</span><select name="format" required><option value="">Select a format</option><option>Keynote</option><option>Workshop</option><option>Half or full day</option><option>Not sure yet</option></select></label>
+          <label class="field"><span>Anything else I should know (optional)</span><textarea name="notes" rows="4" maxlength="5000"></textarea></label>
+          <input type="text" name="_honey" tabindex="-1" autocomplete="off" hidden>
+          <input type="hidden" name="_subject" value="Speaking request from MissyVe">
+          <button type="submit" class="submit-btn">Send request</button>
+          <p class="form-error" role="alert"></p>
+        </form>
+      </div>
+      <div class="modal-success" role="status" tabindex="-1" hidden>
+        <p class="success-title">Request sent</p>
+        <p class="success-text">Thank you. I'll be in touch soon.</p>
+      </div>`;
+    document.body.append(dialog);
+    const speakingButton = section.querySelector(".about-primary");
+    speakingButton.addEventListener("click", () => {
+      if (!dialog.open) {
+        const confirmation = dialog.querySelector(".modal-success");
+        if (!confirmation.hidden) {
+          confirmation.hidden = true;
+          dialog.querySelector(".speaking-form-content").hidden = false;
+        }
+        dialog.showModal();
+      }
+    });
+    dialog.querySelector(".modal-close").addEventListener("click", () => dialog.close());
+    dialog.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        dialog.close();
+      }
+    });
+    dialog.addEventListener("close", () => speakingButton.focus());
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) {
+        const bounds = dialog.getBoundingClientRect();
+        if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close();
+      }
+    });
   }
 
   if (document.readyState === "loading") {
