@@ -46,7 +46,7 @@
       .portfolio-links{flex-wrap:wrap}
       .portfolio-links .mark{width:64px;height:64px}
       .speaking-dialog{width:calc(100% - 32px);max-width:520px;max-height:calc(100dvh - 32px);padding:36px 32px 30px;border:1px solid var(--line);border-radius:10px;background:var(--navy-800);color:var(--cream-100);box-shadow:0 24px 60px rgba(0,0,0,.45)}
-      .speaking-dialog::backdrop{background:rgba(6,10,18,.72)}
+      .speaking-dialog::backdrop{background:rgba(0,0,0,.72)}
       .speaking-dialog .field select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--navy-800);color:var(--cream-100);font:inherit;font-size:16px}
       .speaking-dialog .field input,.speaking-dialog .field textarea{font-size:16px}
       .speaking-dialog :focus-visible{outline:2px solid var(--gold-300);outline-offset:3px}

@@ -146,10 +146,10 @@
   function installStyles() {
     const style = document.createElement("style");
     style.textContent = `
-      .fr-overlay{position:fixed;inset:0;height:100vh;height:100dvh;z-index:10000;display:grid;place-items:center;padding:20px;background:rgba(3,8,16,.84);backdrop-filter:blur(8px)}
+      .fr-overlay{position:fixed;inset:0;height:100vh;height:100dvh;z-index:10000;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.84);backdrop-filter:blur(8px)}
       .fr-overlay[hidden]{display:none}
-      .fr-panel{position:relative;width:min(760px,100%);max-height:min(900px,calc(100vh - 40px));max-height:min(900px,calc(100dvh - 40px));overflow:auto;background:#0F1B33;color:#F5F0E3;border:1px solid rgba(198,161,91,.42);border-radius:10px;box-shadow:0 24px 80px rgba(0,0,0,.5)}
-      .fr-top{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px 24px;background:rgba(15,27,51,.96);border-bottom:1px solid rgba(198,161,91,.22)}
+      .fr-panel{position:relative;width:min(760px,100%);max-height:min(900px,calc(100vh - 40px));max-height:min(900px,calc(100dvh - 40px));overflow:auto;background:#000;color:#F5F0E3;border:1px solid rgba(198,161,91,.42);border-radius:10px;box-shadow:0 24px 80px rgba(0,0,0,.5)}
+      .fr-top{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px 24px;background:rgba(0,0,0,.96);border-bottom:1px solid rgba(198,161,91,.22)}
       .fr-brand{margin:0;color:#E3CD9A;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
       .fr-close{width:36px;height:36px;border:1px solid rgba(198,161,91,.35);border-radius:50%;background:transparent;color:#F5F0E3;font-size:21px;line-height:1;cursor:pointer}
       .fr-close:hover,.fr-close:focus-visible{color:#E3CD9A;border-color:#C6A15B}
@@ -163,7 +163,7 @@
       .fr-code{min-width:0;flex:1;padding:13px 14px;border:1px solid rgba(198,161,91,.38);border-radius:6px;background:rgba(255,255,255,.04);color:#F5F0E3;font:inherit;font-size:16px}
       .fr-code::placeholder{color:#B9B2A0}
       .fr-error{min-height:1.4em;margin:10px 0 0;color:#E3CD9A;font-size:12px;text-align:left}
-      .fr-button{border:1px solid #C6A15B;border-radius:6px;padding:12px 18px;background:#C6A15B;color:#0A1220;font:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s ease,border-color .2s ease}
+      .fr-button{border:1px solid #C6A15B;border-radius:6px;padding:12px 18px;background:#C6A15B;color:#000;font:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s ease,border-color .2s ease}
       .fr-button:hover:not(:disabled){background:#E3CD9A;border-color:#E3CD9A}
       .fr-button:disabled{border-color:rgba(198,161,91,.18);background:rgba(198,161,91,.13);color:#B9B2A0;cursor:not-allowed}
       .fr-progress-label{display:flex;justify-content:space-between;gap:12px;margin-bottom:8px;color:#B9B2A0;font-size:12px}
@@ -178,7 +178,7 @@
       .fr-module p{margin:0;color:#B9B2A0;font-size:13px;line-height:1.65}
       .fr-question{margin:12px 0;padding:20px;border:1px solid rgba(198,161,91,.18);border-radius:8px;background:rgba(255,255,255,.025)}
       .fr-question-title{display:flex;gap:12px;align-items:flex-start;margin:0 0 18px;color:#F5F0E3;font-size:14px;font-weight:500;line-height:1.6}
-      .fr-number{display:grid;flex:0 0 24px;place-items:center;width:24px;height:24px;border-radius:50%;background:#C6A15B;color:#0A1220;font-size:12px;font-weight:700}
+      .fr-number{display:grid;flex:0 0 24px;place-items:center;width:24px;height:24px;border-radius:50%;background:#C6A15B;color:#000;font-size:12px;font-weight:700}
       .fr-options{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
       .fr-choice{min-height:68px;padding:8px 5px;border:1px solid rgba(198,161,91,.25);border-radius:6px;background:rgba(255,255,255,.025);color:#B9B2A0;font:inherit;font-size:10px;line-height:1.35;cursor:pointer}
       .fr-choice:hover{border-color:#C6A15B;color:#F5F0E3}
