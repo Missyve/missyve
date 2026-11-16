@@ -116,7 +116,7 @@
       const heading = document.createElement("h2");
       heading.className = portfolioLabel.className;
       heading.id = "portfolio-title";
-      heading.textContent = "Companies I've Started";
+      heading.textContent = "Ventures";
       portfolioLabel.replaceWith(heading);
       portfolio.setAttribute("role", "region");
       portfolio.setAttribute("aria-labelledby", heading.id);
