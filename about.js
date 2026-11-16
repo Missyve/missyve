@@ -41,8 +41,8 @@
       .about-secondary:hover:not(:disabled){background:rgba(198,161,91,.15)}
       .about-button:focus-visible,.about-copy a:focus-visible,.about-credentials a:focus-visible{outline:2px solid var(--gold-300);outline-offset:3px}
       .about-copy a{color:var(--gold-300)}
-      .portfolio{max-width:none;text-align:center}
-      .portfolio .portfolio-label{margin:0 0 24px;color:var(--cream-100);font-family:'Hanken Grotesk',sans-serif;font-size:clamp(1.6rem,2.7vw,2rem);font-weight:700;letter-spacing:normal;line-height:1.12;text-transform:none}
+      .hero .portfolio{max-width:none;margin-top:clamp(64px,8vw,96px);padding-top:clamp(48px,6vw,72px);text-align:center}
+      .portfolio .portfolio-label{margin:0 0 clamp(44px,5vw,56px);color:var(--cream-100);font-family:'Hanken Grotesk',sans-serif;font-size:clamp(1.6rem,2.7vw,2rem);font-weight:700;letter-spacing:normal;line-height:1.12;text-transform:none}
       .portfolio-links{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:start;gap:clamp(16px,3vw,32px)}
       .portfolio-links a{height:100%;min-width:0;text-align:center}
       .portfolio-links .mark{width:64px;height:64px}
@@ -81,8 +81,9 @@
           <h2 id="about-title">Hi! I'm Melissa (Missy) Wood</h2>
           <p class="about-subhead">Founder of Curaite | SXSW Startup Mentor | FIESTA Board Advisor</p>
           <div class="about-copy">
-            <p>I'm a serial entrepreneur with 30 years in startups, including work with startups acquired by Apple and Google. My most recent company, Curaite, reached 3,400 users in its first 3 weeks.</p>
-            <p>I created the Venture Validation Framework™ to help first-time founders get honest answers early, validate fast, and bring the right people with them.</p>
+            <p>I’m a serial entrepreneur with 30 years in startups, including work with companies acquired by Apple and Google. My most recent, Curaite, reached 3,400 users in its first 3 weeks.</p>
+            <p>I’m also a GRITS girl: Girl Raised in the South. I learned early to work hard, show up for people, and keep going when it gets tough.</p>
+            <p>I created the Venture Validation Framework™ to give first-time founders honest answers early, so they can validate fast, bring the right people with them, and build with that same grit.</p>
           </div>
           <p class="about-engagements-label">Recent speaking engagements</p>
           <p class="about-engagements-copy">SXSW · FIESTA · Austin Tech Week, Women in Tech Kickoff · University of Illinois MBA · Creative Collective Founders Night · BBB AI Made Practical Conference</p>

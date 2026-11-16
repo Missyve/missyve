@@ -186,7 +186,8 @@
       .fr-choice b{display:block;margin:0 auto 5px;color:#E3CD9A;font-size:13px}
       .fr-nav{display:flex;gap:10px;margin-top:22px}
       .fr-nav .fr-button{flex:1}
-      .fr-back{background:transparent;color:#E3CD9A}
+      .fr-back{background:transparent;color:#E3CD9A;transition:none}
+      .fr-button.fr-back:hover:not(:disabled){color:#000}
       .fr-book-card .fr-book-button{display:inline-block;margin-top:14px;padding:9px 16px;font-size:12px;text-decoration:none}
       .fr-hint{margin:12px 0 0;color:#B9B2A0;font-size:11px;text-align:center}
       .fr-result-score{display:flex;align-items:baseline;gap:10px;margin:20px 0 14px;color:#E3CD9A}

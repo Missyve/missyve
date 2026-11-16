@@ -20,6 +20,8 @@
       .workshop-feature p:not(.workshop-feature-label){margin:0;color:var(--cream-100);font-size:14px;line-height:1.7}
       .workshop-feature a{margin-top:20px;opacity:1;animation:none}
       .workshop-details summary{display:inline-flex;margin-top:20px;opacity:1;animation:none;list-style:none}
+      .workshop-feature .workshop-partner-link:not([hidden]){display:block;width:max-content;max-width:100%}
+      .workshop-feature .workshop-partner-link[hidden]{display:none}
       .workshop-details summary::-webkit-details-marker{display:none}
       .workshop-details summary .workshop-less,.workshop-details[open] summary .workshop-more{display:none}
       .workshop-details[open] summary .workshop-less{display:inline}
@@ -31,7 +33,7 @@
       .workshop-cards h4{margin:0 0 10px;color:var(--gold-300);font-family:'Fraunces',serif;font-size:17px;font-weight:500}
       .workshop-feature .workshop-cards p{font-size:13px}
       .workshop-feature .workshop-waitlist{display:inline-block;width:auto;margin-top:16px;text-decoration:none}
-      .workshop-feature .workshop-helper{margin-top:10px;font-size:12px}
+      .workshop-feature p.workshop-helper:not(.workshop-feature-label){margin-top:10px;font-size:12px}
       @media(max-width:600px){.workshop-cards{grid-template-columns:1fr}}
       .workshop-sponsor{display:flex;align-items:center;gap:14px;margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}
       .workshop-feature .workshop-sponsor p{font-size:12px}
@@ -63,6 +65,7 @@
               </div>
             </div>
           </details>
+          <a class="cta workshop-partner-link" href="/spillingthetea#partner" hidden>Sponsor or host a workshop <span aria-hidden="true">&rarr;</span></a>
           <div class="workshop-waitlist-section">
             <div class="workshop-waitlist-intro">
               <h3>Join the waitlist</h3>
@@ -74,7 +77,7 @@
         </div>
       </div>
       <div class="workshop-sponsor">
-        <p>In partnership with</p>
+        <p>Sponsored by</p>
         <a href="https://cowgirltea.com/our-story/" target="_blank" rel="noopener noreferrer" aria-label="Cowgirl Tea"><img src="/images/cowgirl-tea-logo.png" alt="" width="374" height="186"></a>
       </div>`;
     portfolio.before(section);

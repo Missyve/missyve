@@ -3,11 +3,99 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="0; url=/#workshop-series">
-  <link rel="canonical" href="https://missyve.co/#workshop-series">
-  <title>Spilling the Tea | MissyVe</title>
+  <title>Spilling the Tea on Becoming a Successful Founder | MissyVe</title>
+  <meta name="description" content="A quarterly workshop series for aspiring and first-time female founders. Explore the workshops and join the waitlist.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/spillingthetea/style.css">
+  <script defer src="/spillingthetea/partner.js"></script>
 </head>
 <body>
-  <p>The workshop series has moved to the <a href="/#workshop-series">MissyVe homepage</a>.</p>
+  <nav class="navigation" aria-label="Main navigation">
+    <a href="/">MissyVe home</a>
+    <a href="/#readiness-assessment">Take the readiness assessment <span aria-hidden="true">→</span></a>
+  </nav>
+  <main>
+    <header class="hero">
+      <h1>Spilling the Tea on Becoming a Successful Founder</h1>
+      <p class="subhead">Building with Cowgirl Grit: a quarterly workshop series for aspiring and first-time female founders.</p>
+      <p>Sponsored by <a href="https://cowgirltea.com/our-story/" target="_blank" rel="noopener noreferrer">Cowgirl Tea</a>.</p>
+      <p>Most first-time founders commit their savings and years of their lives before they know whether they're ready. Find out first.</p>
+      <a class="primary-button" href="https://forms.gle/45ULw6hv8pnh3Yb98" target="_blank" rel="noopener noreferrer">Join the waitlist (3-minute survey) <span aria-hidden="true">→</span></a>
+      <p class="helper">Finish the survey and get an early-bird code.</p>
+    </header>
+    <section class="workshops" aria-labelledby="workshops-title">
+      <h2 id="workshops-title">The Workshops</h2>
+      <p>Three hands-on sessions. Each one stands alone, and together they take you from "should I?" to "here's my proof."</p>
+      <div class="cards">
+        <article><h3>Are You Ready?</h3><p>Check yourself against the six readiness dimensions with a private assessment.</p></article>
+        <article><h3>Idea to Proof</h3><p>Prototype your idea with AI tools and design a real market test.</p></article>
+        <article><h3>Don't Ride Alone</h3><p>Find the co-founders, advisors and partners who make a startup last.</p></article>
+      </div>
+    </section>
+    <section class="waitlist" aria-labelledby="waitlist-title">
+      <h2 id="waitlist-title">Join the waitlist</h2>
+      <p>Be first to hear about dates. Tell me what you need most, and get an early-bird code when you finish.</p>
+      <a class="primary-button" href="https://forms.gle/45ULw6hv8pnh3Yb98" target="_blank" rel="noopener noreferrer">Join the waitlist (3-minute survey) <span aria-hidden="true">→</span></a>
+      <p class="helper">Finish the survey and get an early-bird code.</p>
+    </section>
+    <section class="partner" id="partner" aria-labelledby="partner-title">
+      <h2 id="partner-title">Partner with Spilling the Tea</h2>
+      <p>A quarterly workshop series for aspiring and first-time female founders, moving from one Austin-area community to the next. Host a workshop for your members, or sponsor the series.</p>
+      <div class="cards partner-cards">
+        <article>
+          <h3>Host a workshop</h3>
+          <p>Bring the series to your members. I lead the workshops and the private readiness assessments. You provide the space and help spread the word.</p>
+          <button class="primary-button" type="button" data-open="host">Host a workshop <span aria-hidden="true">→</span></button>
+          <a class="download-link" href="/downloads/spilling-the-tea-host-overview.pdf" data-download hidden>Download the host overview (PDF) <span aria-hidden="true">→</span></a>
+        </article>
+        <article>
+          <h3>Sponsor the series</h3>
+          <p>Put your brand in front of the next generation of founders. Sponsors receive billing across the series, a short welcome and featured resource at each workshop, and an anonymized insights report on what founders in each community need most.</p>
+          <button class="primary-button" type="button" data-open="sponsor">Become a sponsor <span aria-hidden="true">→</span></button>
+          <a class="download-link" href="/downloads/spilling-the-tea-sponsor-overview.pdf" data-download hidden>Download the sponsor overview (PDF) <span aria-hidden="true">→</span></a>
+        </article>
+      </div>
+    </section>
+  </main>
+  <footer>© MissyVe 2026</footer>
+
+  <dialog class="inquiry-dialog" id="host-dialog" aria-labelledby="host-title">
+    <button class="dialog-close" type="button" aria-label="Close inquiry">&times;</button>
+    <h2 id="host-title">Host a workshop</h2>
+    <form novalidate data-inquiry>
+      <input type="hidden" name="_subject" value="Spilling the Tea: Host">
+      <input class="honeypot" type="text" name="_honey" aria-hidden="true" tabindex="-1" autocomplete="off">
+      <label>Name <input name="name" autocomplete="name" maxlength="200" required aria-describedby="host-name-error"><span class="field-error" id="host-name-error"></span></label>
+      <label>Email <input type="email" name="email" autocomplete="email" maxlength="254" required aria-describedby="host-email-error"><span class="field-error" id="host-email-error"></span></label>
+      <label>Organization or community <input name="organization" autocomplete="organization" maxlength="200" required aria-describedby="host-organization-error"><span class="field-error" id="host-organization-error"></span></label>
+      <label>Approximate number of members <select name="members"><option value="">Select an option</option><option>Under 25</option><option>25 to 50</option><option>50 to 100</option><option>100+</option></select></label>
+      <label>Do you have a space? <select name="space"><option value="">Select an option</option><option>Yes, our own space</option><option>We can arrange one</option><option>Not yet</option></select></label>
+      <label>Preferred timing <select name="timing"><option value="">Select an option</option><option>Next quarter</option><option>Within 6 months</option><option>Just exploring</option></select></label>
+      <label>Anything else I should know <textarea name="notes" rows="4" maxlength="5000"></textarea></label>
+      <button class="primary-button" type="submit">Send inquiry</button>
+      <p class="submission-error" role="alert" hidden>Something went wrong. Email me at <a href="mailto:melissa@curaite.events">melissa@curaite.events</a>.</p>
+    </form>
+    <div class="success" role="status" tabindex="-1" hidden><p>Thank you. I'll reply within two business days.</p><button class="primary-button" type="button" data-close>Close</button></div>
+  </dialog>
+
+  <dialog class="inquiry-dialog" id="sponsor-dialog" aria-labelledby="sponsor-title">
+    <button class="dialog-close" type="button" aria-label="Close inquiry">&times;</button>
+    <h2 id="sponsor-title">Sponsor the series</h2>
+    <form novalidate data-inquiry>
+      <input type="hidden" name="_subject" value="Spilling the Tea: Sponsor">
+      <input class="honeypot" type="text" name="_honey" aria-hidden="true" tabindex="-1" autocomplete="off">
+      <label>Name <input name="name" autocomplete="name" maxlength="200" required aria-describedby="sponsor-name-error"><span class="field-error" id="sponsor-name-error"></span></label>
+      <label>Email <input type="email" name="email" autocomplete="email" maxlength="254" required aria-describedby="sponsor-email-error"><span class="field-error" id="sponsor-email-error"></span></label>
+      <label>Organization <input name="organization" autocomplete="organization" maxlength="200" required aria-describedby="sponsor-organization-error"><span class="field-error" id="sponsor-organization-error"></span></label>
+      <label>Role or title <input name="role" autocomplete="organization-title" maxlength="200"></label>
+      <label>Sponsorship interest <select name="interest" required aria-describedby="sponsor-interest-error"><option value="">Select an option</option><option>Community partner</option><option>Brand partner</option><option>Not sure yet</option></select><span class="field-error" id="sponsor-interest-error"></span></label>
+      <label>Anything else I should know <textarea name="notes" rows="4" maxlength="5000"></textarea></label>
+      <button class="primary-button" type="submit">Send inquiry</button>
+      <p class="submission-error" role="alert" hidden>Something went wrong. Email me at <a href="mailto:melissa@curaite.events">melissa@curaite.events</a>.</p>
+    </form>
+    <div class="success" role="status" tabindex="-1" hidden><p>Thank you. I'll reply within two business days.</p><button class="primary-button" type="button" data-close>Close</button></div>
+  </dialog>
 </body>
 </html>
