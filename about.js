@@ -85,7 +85,7 @@
             <p>I created the Venture Validation Framework™ to help first-time founders get honest answers early, validate fast, and bring the right people with them.</p>
           </div>
           <p class="about-engagements-label">Recent speaking engagements</p>
-          <p class="about-engagements-copy">Austin Tech Week, Women in Tech Kickoff · University of Illinois MBA · Creative Collective Founders Night · BBB AI Made Practical Conference</p>
+          <p class="about-engagements-copy">SXSW · FIESTA · Austin Tech Week, Women in Tech Kickoff · University of Illinois MBA · Creative Collective Founders Night · BBB AI Made Practical Conference</p>
           <div class="about-actions">
             <button class="submit-btn about-button about-primary" type="button" aria-haspopup="dialog">Book me to speak <span aria-hidden="true">&rarr;</span></button>
             <a class="submit-btn about-button about-secondary" href="https://calendly.com/melissawood-missyve/virtual-coffee-with-melissa?back=1&amp;month=2026-11" target="_blank" rel="noopener noreferrer">Book Virtual Chat</a>
