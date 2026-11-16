@@ -10,7 +10,7 @@
 
     const style = document.createElement("style");
     style.textContent = `
-      .about{width:100%;margin-top:clamp(48px,7vw,72px);padding-top:clamp(32px,5vw,48px);border-top:1px solid var(--line);text-align:left;scroll-margin-top:24px}
+      .about{width:100%;margin-top:clamp(48px,7vw,72px);padding-top:clamp(32px,5vw,48px);text-align:left;scroll-margin-top:24px}
       .about-layout{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);align-items:stretch;gap:clamp(24px,5vw,48px)}
       .about-content{display:flex;flex-direction:column;align-items:flex-start}
       .about-portrait{width:100%;max-width:320px}
@@ -39,7 +39,7 @@
       .about-secondary:hover:not(:disabled){background:rgba(198,161,91,.15)}
       .about-button:focus-visible,.about-copy a:focus-visible,.about-credentials a:focus-visible{outline:2px solid var(--gold-300);outline-offset:3px}
       .about-copy a{color:var(--gold-300)}
-      .about-content .portfolio{max-width:100%;text-align:left}
+      .about-content .portfolio{max-width:100%;border-top:0;text-align:left}
       .about-content .portfolio-links{justify-content:flex-start;flex-wrap:wrap}
       @media(max-width:600px){.about-layout{grid-template-columns:1fr}.about-portrait{margin:auto}.about-actions{align-items:flex-start;flex-direction:column}}
       @media(prefers-reduced-motion:reduce){.about-primary{transition:none}.about-primary:hover{transform:none}}
