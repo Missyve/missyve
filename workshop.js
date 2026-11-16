@@ -15,7 +15,9 @@
       .hero .fr-assessment{display:inline-flex;width:auto;align-items:center;justify-content:center;gap:8px;margin:24px 0 0;padding:12px 20px;opacity:1;animation:none}
       .hero .fr-assessment:focus-visible,.workshop-feature a:focus-visible,.workshop-feature summary:focus-visible{outline:2px solid var(--gold-300);outline-offset:3px}
       .workshop-feature{width:100%;margin-top:clamp(48px,7vw,72px);padding:clamp(24px,4vw,36px);border:1px solid var(--line);border-left:3px solid var(--gold-500);border-radius:8px;background:rgba(255,255,255,.025);text-align:left;scroll-margin-top:24px}
-      .workshop-feature-label{margin:0 0 12px;color:var(--gold-300);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+      .workshop-eyebrow{display:flex;flex-direction:column;align-items:flex-start;gap:12px;margin-bottom:24px}
+      .workshop-feature-label{margin:0;color:#fff;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+      .workshop-date{display:inline-block;padding:7px 12px;border:1px solid var(--gold-500);border-radius:4px;color:var(--gold-300);font-size:12px;font-weight:600;letter-spacing:.04em}
       .workshop-feature h2{margin:0 0 12px;color:var(--cream-100);font-family:'Fraunces',serif;font-size:clamp(1.5rem,3vw,2rem);font-weight:500;line-height:1.2}
       .workshop-feature p:not(.workshop-feature-label){margin:0;color:var(--cream-100);font-size:14px;line-height:1.7}
       .workshop-feature a{margin-top:20px;opacity:1;animation:none}
@@ -49,7 +51,10 @@
     section.innerHTML = `
       <div class="workshop-feature-content">
         <div>
-          <p class="workshop-feature-label">Workshop series</p>
+          <div class="workshop-eyebrow">
+            <span class="workshop-date">Coming January 2027</span>
+            <p class="workshop-feature-label">Workshop series</p>
+          </div>
           <h2 id="workshop-feature-title">Spilling the Tea on Becoming a Successful Founder</h2>
           <p>Building with Cowgirl Grit: a quarterly workshop series for aspiring and first-time female founders. Join the waitlist for dates.</p>
           <details class="workshop-details">

@@ -36,9 +36,7 @@
       .about-contact .social a:focus-visible{outline:2px solid var(--gold-300);outline-offset:3px}
       .about-button{display:inline-block;width:auto;margin:0;text-align:center;text-decoration:none}
       .about-primary{padding:14px 22px;transition:background .2s ease,transform .2s ease,box-shadow .2s ease}
-      .about-primary:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(198,161,91,.25)}
-      .about-secondary{background:transparent;border:1px solid var(--gold-500);color:var(--cream-100)}
-      .about-secondary:hover:not(:disabled){background:rgba(198,161,91,.15)}
+      .about-primary:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(189,146,80,.25)}
       .about-button:focus-visible,.about-copy a:focus-visible,.about-credentials a:focus-visible{outline:2px solid var(--gold-300);outline-offset:3px}
       .about-copy a{color:var(--gold-300)}
       .hero .portfolio{max-width:none;margin-top:clamp(64px,8vw,96px);padding-top:clamp(48px,6vw,72px);text-align:center}
