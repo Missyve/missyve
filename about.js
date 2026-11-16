@@ -67,7 +67,7 @@
           <h2 id="about-title">Meet Melissa (Missy) Wood</h2>
           <p class="about-subhead">Founder of Curaite | Creator of the Venture Validation Framework™</p>
           <div class="about-copy">
-            <p>Award-winning serial entrepreneur with 30 years in entrepreneurship, including work with startups acquired by Apple and Google. My recent startup, Curaite, reached 3,400 users in 3 weeks, and now I help first-time founders validate fast, build smart, and bring the right people with them.</p>
+            <p>Award-winning serial entrepreneur with 30 years in entrepreneurship, including work with startups acquired by Apple and Google. My recent startup, Curaite, reached 3,400 users in 3 weeks, and now I help first-time founders validate fast, build smart, and bring the right people with them. I'm an official SXSW Startup Mentor and a FIESTA Board Advisor, leading FIESTA's expansion to Round Rock.</p>
           </div>
           <div class="about-actions">
             <a class="submit-btn about-button about-primary" href="/speaking">Book me to speak <span aria-hidden="true">&rarr;</span></a>
