@@ -29,7 +29,7 @@
       .about-subhead{color:var(--gold-300);font-weight:600}
       .about-engagements-label{margin:8px 0 8px;color:var(--gold-300);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
       .about-engagements-copy{margin:0;color:var(--cream-100);font-size:13px;line-height:1.7}
-      .about-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:24px}
+      .about-actions{display:flex;align-items:center;flex-wrap:wrap;gap:20px;margin-top:24px}
       .about-contact{display:flex;align-items:center;gap:16px}
       .about-contact .social{margin:0;opacity:1;animation:none}
       .about-contact .social a{width:28px;height:28px}
@@ -56,6 +56,7 @@
       .speaking-dialog :focus-visible{outline:2px solid var(--gold-300);outline-offset:3px}
       .speaking-dialog [hidden]{display:none}
       .speaking-dialog .form-error a{color:var(--gold-300)}
+      @media(min-width:601px){.about-portrait{display:flex;flex-direction:column}.about-contact{margin-top:auto;padding-top:8px}.about-contact .social{display:flex}.about-actions{margin-top:auto;padding-top:24px}}
       @media(max-width:520px){.speaking-dialog{padding:32px 20px 24px}}
       @media(max-width:600px){.about-layout{grid-template-columns:1fr}.about-portrait{margin:auto}.about-actions{align-items:flex-start;flex-direction:column}.portfolio-links{grid-template-columns:repeat(2,minmax(0,1fr))}}
       @media(prefers-reduced-motion:reduce){.about-primary{transition:none}.about-primary:hover{transform:none}}
@@ -76,13 +77,14 @@
           <ul class="about-credentials">
             <li><a href="https://www.forbes.com/advisor/business/ai/lovable-review/" target="_blank" rel="noopener noreferrer">Quoted in Forbes Advisor, 2026 <span aria-hidden="true">&rarr;</span></a></li>
           </ul>
+          <div class="about-contact"></div>
         </div>
         <div class="about-content">
           <h2 id="about-title">Hi! I'm Melissa (Missy) Wood</h2>
           <p class="about-subhead">Founder of Curaite | SXSW Startup Mentor | FIESTA Board Advisor</p>
           <div class="about-copy">
             <p>I’m a serial entrepreneur with 30 years in startups, including work with companies acquired by Apple and Google. My most recent, Curaite, reached 3,400 users in its first 3 weeks.</p>
-            <p>I’m also a GRITS girl: Girl Raised in the South. I learned early to work hard, show up for people, and keep going when it gets tough.</p>
+            <p>I’m a GRITS girl: Girl Raised in the South. I learned early to work hard, show up for people, and keep going when it gets tough.</p>
             <p>I created the Venture Validation Framework™ to give first-time founders honest answers early, so they can validate fast, bring the right people with them, and build with that same grit.</p>
           </div>
           <p class="about-engagements-label">Recent speaking engagements</p>
@@ -90,7 +92,6 @@
           <div class="about-actions">
             <button class="submit-btn about-button about-primary" type="button" aria-haspopup="dialog">Book me to speak <span aria-hidden="true">&rarr;</span></button>
             <a class="submit-btn about-button about-secondary" href="https://calendly.com/melissawood-missyve/virtual-coffee-with-melissa?back=1&amp;month=2026-11" target="_blank" rel="noopener noreferrer">Book Virtual Chat</a>
-            <div class="about-contact"></div>
           </div>
         </div>
       </div>`;
