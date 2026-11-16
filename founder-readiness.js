@@ -208,9 +208,9 @@
       .fr-contact,.fr-assessment{border-bottom:0;padding-bottom:0}
       .fr-home-break{width:100%;max-width:420px;height:clamp(24px,4vw,32px);margin-top:clamp(32px,5vw,48px);flex:none;border-top:1px solid var(--line);opacity:0;animation:rise .9s ease-out 1.45s forwards}
       .fr-footer{display:flex;width:100%;flex-direction:column;align-items:center;gap:12px;opacity:0;animation:rise .9s ease-out 1.6s forwards}
-      .fr-contact-label{margin:0;color:#B9B2A0;font-size:11px}
+      .fr-contact-label{margin:0;color:#B9B2A0;font-size:9px}
       .fr-footer-row{display:flex;align-items:center;justify-content:center;gap:clamp(18px,3vw,34px);flex-wrap:wrap}
-      .fr-footer .fr-contact{margin:0;flex-direction:row;align-items:center;gap:8px}
+      .fr-footer .fr-contact{margin:0;flex-direction:row;align-items:center;gap:8px;font-size:10.5px}
       .fr-footer .social{margin:0}
       .fr-copyright{margin:0;color:#B9B2A0;font-size:10px}
       @media(min-width:768px){.page{align-items:flex-start;padding-top:clamp(48px,8vh,88px);padding-bottom:32px}main.hero{width:100%}}
@@ -249,7 +249,7 @@
 
     installStyles();
 
-    document.title = "MissyVe";
+    document.title = "MissyVe | Melissa Wood and Founder Readiness";
     hero.querySelector(".badge")?.remove();
     contactButton.classList.add("fr-contact");
     contactButton.innerHTML = "<span>get in touch</span>";
@@ -287,9 +287,10 @@
 
     const launchButton = document.createElement("button");
     launchButton.type = "button";
-    launchButton.className = "cta fr-assessment";
+    launchButton.className = "submit-btn fr-assessment";
+    launchButton.id = "readiness-assessment";
     launchButton.setAttribute("aria-haspopup", "dialog");
-    launchButton.innerHTML = '<span class="label">For aspiring founders,</span><span>take the assessment</span><span class="arrow" aria-hidden="true">&rarr;</span>';
+    launchButton.innerHTML = '<span>Take the readiness assessment</span><span class="arrow" aria-hidden="true">&rarr;</span>';
     if (portfolio) portfolio.insertAdjacentElement("beforebegin", launchButton);
     else contactButton.insertAdjacentElement("afterend", launchButton);
 
@@ -748,15 +749,23 @@
       overlay.hidden = true;
       document.body.style.overflow = "";
       save();
+      if (window.location.hash === "#readiness-assessment") {
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
       launchButton.focus();
     }
 
-    launchButton.addEventListener("click", () => {
+    function openAssessment() {
       overlay.hidden = false;
       document.body.style.overflow = "hidden";
       fitToViewport();
       startOrResumeAttempt();
+    }
+    launchButton.addEventListener("click", openAssessment);
+    window.addEventListener("hashchange", () => {
+      if (window.location.hash === "#readiness-assessment" && overlay.hidden) openAssessment();
     });
+    if (window.location.hash === "#readiness-assessment") openAssessment();
 
     closeButton.addEventListener("click", close);
     overlay.addEventListener("click", (event) => {

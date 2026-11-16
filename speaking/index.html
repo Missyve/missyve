@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book Melissa to Speak | MissyVe</title>
+  <meta name="description" content="Book Melissa Wood for keynotes and workshops on founder readiness, validation, and building a startup team.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/speaking/style.css">
+  <script defer src="/speaking/form.js"></script>
+</head>
+<body>
+  <nav class="navigation" aria-label="Main navigation">
+    <a href="/">MissyVe home</a>
+    <a href="/speaking" aria-current="page">Speaking</a>
+  </nav>
+  <main>
+    <header class="hero">
+      <h1>Book Melissa to Speak</h1>
+      <p class="subhead">Bring the Venture Validation Framework™ to your community. Keynotes and workshops for founders who want honest answers early.</p>
+    </header>
+    <section aria-labelledby="talks-title">
+      <h2 id="talks-title">Talks</h2>
+      <div class="cards">
+        <article><h3>Are You Ready? The Founder Readiness Check</h3><p>Most first-time founders start with an idea and skip the question of whether they're ready to build it. Six readiness dimensions, a private assessment, and a plan for your missing 30%.</p></article>
+        <article><h3>Idea to Proof: Build and Test in Weeks, Not Years</h3><p>How to prototype with AI tools and design a market test before spending real money, drawn from taking Curaite to 3,400 users in its first 3 weeks.</p></article>
+        <article><h3>Don't Ride Alone: Building the Team Around You</h3><p>Co-founders, advisors, sponsors and partners. How to choose people, share equity deliberately, and build the support most founders underrate.</p></article>
+        <article><h3>Spilling the Tea: On Becoming a Successful Founder</h3><p>A candid keynote built from real pivots and mistakes. Building with Cowgirl Grit.</p></article>
+      </div>
+    </section>
+    <section aria-labelledby="formats-title">
+      <h2 id="formats-title">Formats</h2>
+      <ul>
+        <li>Keynote, 20 to 40 minutes</li>
+        <li>Workshop, 60 to 90 minutes, with the private readiness assessment</li>
+        <li>Half or full day, with workshops and 1:1 slots</li>
+      </ul>
+      <p><strong>Good for:</strong> Accelerators, universities, chambers, women founder communities, coworking spaces and corporate innovation teams.</p>
+    </section>
+    <section aria-labelledby="bio-title">
+      <h2 id="bio-title">About Melissa</h2>
+      <p>Melissa Wood is an award-winning serial entrepreneur and Founder of Curaite, an AI event discovery platform that reached 3,400 users in its first 3 weeks. She is an SXSW Startup Mentor and a FIESTA Board Advisor, leading FIESTA's first expansion to Round Rock.</p>
+    </section>
+    <section class="inquiry" aria-labelledby="inquiry-title">
+      <h2 id="inquiry-title">Request Melissa for your event</h2>
+      <form method="post" action="https://script.google.com/macros/s/AKfycbxtnhckqHy2eyVJnMOYl1WR-jOjqzd4e7VxL5EtvUtJiMjiAJ8tT4NK-0Jb28gV2_bIsQ/exec" target="speaking-response">
+        <label>Name <input type="text" name="name" autocomplete="name" maxlength="200" required></label>
+        <label>Email <input type="email" name="email" autocomplete="email" maxlength="254" required></label>
+        <label>Organization <input type="text" name="organization" autocomplete="organization" maxlength="200" required></label>
+        <label>Event date (optional) <input type="date" name="eventDate"></label>
+        <label>Expected audience size (optional)
+          <select name="audience"><option value="">Select an audience size</option><option>Under 25</option><option>25 to 50</option><option>50 to 100</option><option>100+</option></select>
+        </label>
+        <label>Format
+          <select name="format" required><option value="">Select a format</option><option>Keynote</option><option>Workshop</option><option>Half or full day</option><option>Not sure yet</option></select>
+        </label>
+        <label>Anything else I should know (optional) <textarea name="notes" rows="5" maxlength="5000"></textarea></label>
+        <label class="honeypot" aria-hidden="true">Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+        <input type="hidden" name="formType" value="speakingInquiry">
+        <input type="hidden" name="requestId">
+        <button type="submit">Send request</button>
+        <p class="helper">Rates are shared on request. I reply within two business days.</p>
+        <p class="error" role="alert"></p>
+      </form>
+      <p class="success" role="status" tabindex="-1" hidden>Thank you. I'll be in touch within two business days.</p>
+      <iframe name="speaking-response" title="Speaking request response" hidden></iframe>
+    </section>
+  </main>
+  <footer><a href="/speaking" aria-current="page">Speaking</a><p>© MissyVe 2026</p></footer>
+</body>
+</html>

@@ -5,6 +5,12 @@ const FR_CONFIG = {
 };
 
 function doPost(event) {
+  if (event && event.parameter && event.parameter.formType === "workshopWaitlist") {
+    return handleWorkshopWaitlist(event.parameter);
+  }
+  if (event && event.parameter && event.parameter.formType === "speakingInquiry") {
+    return handleSpeakingInquiry(event.parameter);
+  }
   try {
     const payload = JSON.parse(event.postData.contents || "{}");
     validatePayload(payload);
@@ -23,6 +29,113 @@ function doPost(event) {
   } catch (error) {
     return jsonResponse({ ok: false, error: String(error && error.message || error) });
   }
+}
+
+function handleSpeakingInquiry(params) {
+  const requestId = typeof params.requestId === "string" && /^[a-zA-Z0-9-]{1,80}$/.test(params.requestId)
+    ? params.requestId : "";
+  let ok = false;
+  try {
+    if (!requestId) throw new Error("Invalid request.");
+    if (!params.website) {
+      const read = (key, max) => {
+        const value = typeof params[key] === "string" ? params[key].trim() : "";
+        if (value.length > max) throw new Error("A field is too long.");
+        return value;
+      };
+      const name = read("name", 200);
+      const email = read("email", 254).toLowerCase();
+      const organization = read("organization", 200);
+      const date = read("eventDate", 10);
+      const audience = read("audience", 30);
+      const format = read("format", 30);
+      const notes = read("notes", 5000);
+      if (!name || !organization || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Required fields are invalid.");
+      if (date && (!/^\d{4}-\d{2}-\d{2}$/.test(date) || isNaN(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date)) throw new Error("Invalid event date.");
+      if (!["", "Under 25", "25 to 50", "50 to 100", "100+"].includes(audience)) throw new Error("Invalid audience size.");
+      if (!["Keynote", "Workshop", "Half or full day", "Not sure yet"].includes(format)) throw new Error("Invalid format.");
+      const values = [name, email, organization, date, audience, format, notes];
+      const digest = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, JSON.stringify(values), Utilities.Charset.UTF_8);
+      const key = "speaking:" + digest.map((byte) => ("0" + (byte & 255).toString(16)).slice(-2)).join("");
+      const lock = LockService.getScriptLock();
+      lock.waitLock(30000);
+      try {
+        const properties = PropertiesService.getScriptProperties();
+        const now = Date.now();
+        const existing = properties.getProperties();
+        Object.keys(existing).forEach((item) => {
+          if (item.startsWith("speaking:") && now - Number(existing[item]) >= 600000) properties.deleteProperty(item);
+        });
+        if (!existing[key] || now - Number(existing[key]) >= 600000) {
+          MailApp.sendEmail({
+            to: "melissa@curaite.events",
+            replyTo: email,
+            subject: "Speaking request from MissyVe",
+            body: `Name: ${name}\nEmail: ${email}\nOrganization: ${organization}\nEvent date: ${date || "Not provided"}\nExpected audience size: ${audience || "Not provided"}\nFormat: ${format}\n\nAnything else:\n${notes || "Not provided"}`,
+            name: FR_CONFIG.SENDER_NAME
+          });
+          properties.setProperty(key, String(now));
+        }
+      } finally {
+        lock.releaseLock();
+      }
+    }
+    ok = true;
+  } catch (error) {
+    console.error("Speaking inquiry failed", error);
+  }
+  const message = JSON.stringify({ type: "speakingInquiryResult", requestId, ok }).replace(/</g, "\\u003c");
+  return HtmlService.createHtmlOutput(
+    '<!doctype html><html><body><script>window.top.postMessage(' + message + ', "https://missyve.co");</script></body></html>'
+  ).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleWorkshopWaitlist(params) {
+  const requestId = typeof params.requestId === "string" && /^[a-zA-Z0-9-]{1,80}$/.test(params.requestId)
+    ? params.requestId : "";
+  let result;
+  try {
+    if (!requestId) throw new Error("Invalid request.");
+    if (params.website) {
+      result = { ok: true };
+    } else {
+      const name = typeof params.name === "string" ? params.name.trim() : "";
+      const email = typeof params.email === "string" ? params.email.trim().toLowerCase() : "";
+      const community = typeof params.community === "string" ? params.community : "";
+      const communities = ["", "Creative Collective", "Round Rock Chamber", "Capital Factory", "FIESTA", "Other", "None of these"];
+      if (!name || name.length > 200) throw new Error("Please enter a valid name.");
+      if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Please enter a valid email address.");
+      if (!communities.includes(community)) throw new Error("Please select a valid community.");
+
+      const lock = LockService.getScriptLock();
+      lock.waitLock(30000);
+      try {
+        if (!FR_CONFIG.SPREADSHEET_ID || FR_CONFIG.SPREADSHEET_ID === "PASTE_GOOGLE_SHEET_ID_HERE") {
+          throw new Error("The waitlist is not configured.");
+        }
+        const spreadsheet = SpreadsheetApp.openById(FR_CONFIG.SPREADSHEET_ID);
+        const sheet = spreadsheet.getSheetByName("Workshop Waitlist") || spreadsheet.insertSheet("Workshop Waitlist");
+        if (sheet.getLastRow() === 0) sheet.appendRow(["Submitted At", "Name", "Email", "Community"]);
+        const lastRow = sheet.getLastRow();
+        const emails = lastRow > 1 ? sheet.getRange(2, 3, lastRow - 1, 1).getValues() : [];
+        if (!emails.some((row) => String(row[0]).trim().toLowerCase() === email)) {
+          const safeCell = (value) => /^[=+\-@]/.test(value) ? "'" + value : value;
+          sheet.appendRow([new Date(), safeCell(name), safeCell(email), safeCell(community)]);
+        }
+        SpreadsheetApp.flush();
+      } finally {
+        lock.releaseLock();
+      }
+      result = { ok: true };
+    }
+  } catch (error) {
+    console.error("Workshop waitlist submission failed", error);
+    result = { ok: false };
+  }
+  const message = JSON.stringify({ type: "workshopWaitlistResult", requestId, ok: result.ok }).replace(/</g, "\\u003c");
+  return HtmlService.createHtmlOutput(
+    '<!doctype html><html><body><script>window.top.postMessage(' + message + ', "https://missyve.co");</script></body></html>'
+  ).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
 function validatePayload(payload) {
