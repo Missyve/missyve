@@ -10,7 +10,7 @@
     const style = document.createElement("style");
     style.textContent = `
       html,body,.page{background:#000}
-      .hero .headline{margin-bottom:24px}
+      .hero .headline{margin-bottom:24px;opacity:1;animation:none}
       .home-subhead{max-width:640px;margin:0;color:rgba(245,240,227,.8);font-family:'Inter',sans-serif;font-size:clamp(17px,2.2vw,21px);line-height:1.55;text-align:center}
       .hero .fr-assessment{display:inline-flex;width:auto;align-items:center;justify-content:center;gap:8px;margin:24px 0 0;padding:12px 20px;opacity:1;animation:none}
       .hero .fr-assessment:focus-visible,.workshop-feature a:focus-visible{outline:2px solid var(--gold-300);outline-offset:3px}
