@@ -81,9 +81,9 @@
           <h2 id="about-title">Hi! I'm Melissa (Missy) Wood</h2>
           <p class="about-subhead">Founder of Curaite | SXSW Startup Mentor | FIESTA Board Advisor</p>
           <div class="about-copy">
-            <p>I’m a serial entrepreneur with 30 years in startups, including work with companies acquired by Apple and Google. My most recent, Curaite, reached 3,400 users in its first 3 weeks.</p>
-            <p>I’m a GRITS girl: Girl Raised in the South. I learned early to work hard, show up for people, and keep going when it gets tough.</p>
-            <p>I created the Venture Validation Framework™ to give first-time founders honest answers early, so they can validate fast, bring the right people with them, and build with that same grit.</p>
+            <p>I’m a serial entrepreneur with 30 years in startups, including working with companies acquired by Apple and Google. My most recent, Curaite, reached 3,400 users in its first 3 weeks.</p>
+            <p>I’m a GRITS girl: Girl Raised in the South. I learned early to work hard show up for myself and others, and keep going when it gets tough.</p>
+            <p>I created the Venture Validation Framework to give first-time founders honest answers early, so they can validate fast, bring on the right people and build with tenacity.</p>
           </div>
           <p class="about-engagements-label">Recent speaking engagements</p>
           <p class="about-engagements-copy">SXSW · FIESTA · Austin Tech Week, Women in Tech Kickoff · University of Illinois MBA · Creative Collective Founders Night · BBB AI Made Practical Conference</p>
