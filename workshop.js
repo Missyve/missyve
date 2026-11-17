@@ -76,7 +76,7 @@
               <h3>Join the waitlist</h3>
               <p>Be first to hear about dates. Tell me what you need most, and get an early-bird code when you finish.</p>
             </div>
-            <a class="submit-btn workshop-waitlist" href="https://forms.gle/45ULw6hv8pnh3Yb98" target="_blank" rel="noopener noreferrer">Join the waitlist (3-minute survey) <span aria-hidden="true">&rarr;</span></a>
+            <a class="submit-btn workshop-waitlist" href="https://forms.gle/45ULw6hv8pnh3Yb98" target="_blank" rel="noopener noreferrer">Join the waitlist</a>
             <p class="workshop-helper">Finish the survey and get an early-bird code.</p>
           </div>
         </div>

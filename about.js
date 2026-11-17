@@ -34,8 +34,8 @@
       .about-contact .social{margin:0;opacity:1;animation:none}
       .about-contact .social a{width:28px;height:28px}
       .about-contact .social a:focus-visible{outline:2px solid var(--gold-300);outline-offset:3px}
-      .about-button{display:inline-block;width:auto;margin:0;text-align:center;text-decoration:none}
-      .about-primary{padding:14px 22px;transition:background .2s ease,transform .2s ease,box-shadow .2s ease}
+      .about-button{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:48px;width:auto;margin:0;padding:14px 22px;line-height:1.2;text-align:center;text-decoration:none}
+      .about-primary{transition:background .2s ease,transform .2s ease,box-shadow .2s ease}
       .about-primary:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(189,146,80,.25)}
       .about-button:focus-visible,.about-copy a:focus-visible,.about-credentials a:focus-visible{outline:2px solid var(--gold-300);outline-offset:3px}
       .about-copy a{color:var(--gold-300)}
@@ -88,7 +88,7 @@
           <p class="about-engagements-label">Recent speaking engagements</p>
           <p class="about-engagements-copy">SXSW · FIESTA · Austin Tech Week, Women in Tech Kickoff · University of Illinois MBA · Creative Collective Founders Night · BBB AI Made Practical Conference</p>
           <div class="about-actions">
-            <button class="submit-btn about-button about-primary" type="button" aria-haspopup="dialog">Book me to speak <span aria-hidden="true">&rarr;</span></button>
+            <button class="submit-btn about-button about-primary" type="button" aria-haspopup="dialog">Book me to speak</button>
             <a class="submit-btn about-button about-secondary" href="https://calendly.com/melissawood-missyve/virtual-coffee-with-melissa?back=1&amp;month=2026-11" target="_blank" rel="noopener noreferrer">Book Virtual Chat</a>
           </div>
         </div>
