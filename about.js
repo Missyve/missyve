@@ -51,6 +51,7 @@
       .speaking-dialog::backdrop{background:rgba(0,0,0,.72)}
       .speaking-dialog .field select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--navy-800);color:var(--cream-100);font:inherit;font-size:16px}
       .speaking-dialog .field input,.speaking-dialog .field textarea{font-size:16px}
+      .speaking-dialog .field input[type="date"]{color-scheme:dark}
       .speaking-dialog .field .fr-hint-left{margin-bottom:10px}
       .speaking-dialog :focus-visible{outline:2px solid var(--gold-300);outline-offset:3px}
       .speaking-dialog [hidden]{display:none}
