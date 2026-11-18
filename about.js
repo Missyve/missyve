@@ -164,7 +164,7 @@
           <label class="field"><span>Organization</span><input type="text" name="organization" autocomplete="organization" maxlength="200" required></label>
           <label class="field"><span>Event date (optional)</span><input type="date" name="eventDate"></label>
           <label class="field"><span>Expected audience size (optional)</span><select name="audience"><option value="">Select an audience size</option><option>Under 25</option><option>25 to 50</option><option>50 to 100</option><option>100+</option></select></label>
-          <label class="field"><span>Format</span><select name="format" required><option value="">Select a format</option><option>Keynote</option><option>Workshop</option><option>Fireside Chat</option><option>Panel</option><option>Class Lecture</option><option>Not sure yet</option></select></label>
+          <label class="field"><span>Format</span><select name="format" required><option value="">Select a format</option><option>Keynote</option><option>Workshop</option><option>Fireside Chat</option><option>Panel</option><option>Class Lecture</option><option>Podcast</option><option>Not sure yet</option></select></label>
           <label class="field"><span>Anything else I should know (optional)</span><textarea name="notes" rows="4" maxlength="5000"></textarea></label>
           <input type="text" name="_honey" tabindex="-1" autocomplete="off" hidden>
           <input type="hidden" name="_subject" value="Speaking request from MissyVe">

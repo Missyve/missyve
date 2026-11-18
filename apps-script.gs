@@ -53,7 +53,7 @@ function handleSpeakingInquiry(params) {
       if (!name || !organization || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Required fields are invalid.");
       if (date && (!/^\d{4}-\d{2}-\d{2}$/.test(date) || isNaN(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date)) throw new Error("Invalid event date.");
       if (!["", "Under 25", "25 to 50", "50 to 100", "100+"].includes(audience)) throw new Error("Invalid audience size.");
-      if (!["Keynote", "Workshop", "Half or full day", "Not sure yet"].includes(format)) throw new Error("Invalid format.");
+      if (!["Keynote", "Workshop", "Fireside Chat", "Panel", "Class Lecture", "Podcast", "Not sure yet"].includes(format)) throw new Error("Invalid format.");
       const values = [name, email, organization, date, audience, format, notes];
       const digest = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, JSON.stringify(values), Utilities.Charset.UTF_8);
       const key = "speaking:" + digest.map((byte) => ("0" + (byte & 255).toString(16)).slice(-2)).join("");
