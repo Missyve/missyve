@@ -49,12 +49,13 @@ function handleSpeakingInquiry(params) {
       const date = read("eventDate", 10);
       const audience = read("audience", 30);
       const format = read("format", 30);
+      const eventDetails = read("event_details", 5000);
       const notes = read("notes", 5000);
-      if (!name || !organization || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Required fields are invalid.");
+      if (!name || !organization || !eventDetails || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Required fields are invalid.");
       if (date && (!/^\d{4}-\d{2}-\d{2}$/.test(date) || isNaN(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date)) throw new Error("Invalid event date.");
       if (!["", "Under 25", "25 to 50", "50 to 100", "100+"].includes(audience)) throw new Error("Invalid audience size.");
       if (!["Keynote", "Workshop", "Fireside Chat", "Panel", "Class Lecture", "Podcast", "Not sure yet"].includes(format)) throw new Error("Invalid format.");
-      const values = [name, email, organization, date, audience, format, notes];
+      const values = [name, email, organization, date, audience, format, eventDetails, notes];
       const digest = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, JSON.stringify(values), Utilities.Charset.UTF_8);
       const key = "speaking:" + digest.map((byte) => ("0" + (byte & 255).toString(16)).slice(-2)).join("");
       const lock = LockService.getScriptLock();
@@ -71,7 +72,7 @@ function handleSpeakingInquiry(params) {
             to: "melissa@curaite.events",
             replyTo: email,
             subject: "Speaking request from MissyVe",
-            body: `Name: ${name}\nEmail: ${email}\nOrganization: ${organization}\nEvent date: ${date || "Not provided"}\nExpected audience size: ${audience || "Not provided"}\nFormat: ${format}\n\nAnything else:\n${notes || "Not provided"}`,
+            body: `Name: ${name}\nEmail: ${email}\nOrganization: ${organization}\nEvent date: ${date || "Not provided"}\nExpected audience size: ${audience || "Not provided"}\nFormat: ${format}\n\nTell me about your event:\n${eventDetails}\n\nLogistics:\n${notes || "Not provided"}`,
             name: FR_CONFIG.SENDER_NAME
           });
           properties.setProperty(key, String(now));

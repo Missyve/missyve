@@ -65,6 +65,10 @@
     for (const field of [speakingForm.elements.name, speakingForm.elements.organization]) {
       field.setCustomValidity(field.value.trim() ? "" : "Please complete this field.");
     }
+    const eventDetails = speakingForm.elements.event_details;
+    eventDetails.setCustomValidity(eventDetails.value.trim()
+      ? ""
+      : "Please share a little about your event so I can recommend the right talk.");
     if (!speakingForm.reportValidity()) return;
 
     const button = speakingForm.querySelector('button[type="submit"]');
@@ -73,7 +77,7 @@
     const content = dialog.querySelector(".speaking-form-content");
     const confirmation = dialog.querySelector(".modal-success");
     const data = Object.fromEntries(new FormData(speakingForm));
-    const message = `Name: ${data.name}\nEmail: ${data.email}\nOrganization: ${data.organization}\nEvent date: ${data.eventDate || "Not provided"}\nExpected audience size: ${data.audience || "Not provided"}\nFormat: ${data.format}\n\nAnything else: ${data.notes || "Not provided"}`;
+    const message = `Name: ${data.name}\nEmail: ${data.email}\nOrganization: ${data.organization}\nEvent date: ${data.eventDate || "Not provided"}\nExpected audience size: ${data.audience || "Not provided"}\nFormat: ${data.format}\n\nTell me about your event:\n${data.event_details}\n\nLogistics:\n${data.notes || "Not provided"}`;
     error.replaceChildren();
     button.disabled = true;
     button.textContent = "Sending...";
@@ -97,7 +101,7 @@
   }, true);
 
   document.addEventListener("input", (event) => {
-    if (event.target.closest("#speakingForm") && event.target instanceof HTMLInputElement) {
+    if (event.target.closest("#speakingForm") && (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)) {
       event.target.setCustomValidity("");
     }
   });

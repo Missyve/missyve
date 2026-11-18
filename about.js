@@ -51,6 +51,7 @@
       .speaking-dialog::backdrop{background:rgba(0,0,0,.72)}
       .speaking-dialog .field select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--navy-800);color:var(--cream-100);font:inherit;font-size:16px}
       .speaking-dialog .field input,.speaking-dialog .field textarea{font-size:16px}
+      .speaking-dialog .field .fr-hint-left{margin-bottom:10px}
       .speaking-dialog :focus-visible{outline:2px solid var(--gold-300);outline-offset:3px}
       .speaking-dialog [hidden]{display:none}
       .speaking-dialog .form-error a{color:var(--gold-300)}
@@ -165,7 +166,16 @@
           <label class="field"><span>Event date (optional)</span><input type="date" name="eventDate"></label>
           <label class="field"><span>Expected audience size (optional)</span><select name="audience"><option value="">Select an audience size</option><option>Under 25</option><option>25 to 50</option><option>50 to 100</option><option>100+</option></select></label>
           <label class="field"><span>Format</span><select name="format" required><option value="">Select a format</option><option>Keynote</option><option>Workshop</option><option>Fireside Chat</option><option>Panel</option><option>Class Lecture</option><option>Podcast</option><option>Not sure yet</option></select></label>
-          <label class="field"><span>Anything else I should know (optional)</span><textarea name="notes" rows="4" maxlength="5000"></textarea></label>
+          <div class="field">
+            <label for="speaking-event-details"><span>Tell me about your event</span></label>
+            <p class="fr-hint fr-hint-left" id="speaking-event-details-hint">Who's in the room, what you'd like them to walk away with, and any topic or theme you have in mind.</p>
+            <textarea id="speaking-event-details" name="event_details" rows="4" maxlength="5000" required aria-describedby="speaking-event-details-hint"></textarea>
+          </div>
+          <div class="field">
+            <label for="speaking-logistics"><span>Logistics (optional)</span></label>
+            <p class="fr-hint fr-hint-left" id="speaking-logistics-hint">Budget, travel, or anything else I should plan for.</p>
+            <textarea id="speaking-logistics" name="notes" rows="4" maxlength="5000" aria-describedby="speaking-logistics-hint"></textarea>
+          </div>
           <input type="text" name="_honey" tabindex="-1" autocomplete="off" hidden>
           <input type="hidden" name="_subject" value="Speaking request from MissyVe">
           <button type="submit" class="submit-btn">Send request</button>
