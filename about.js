@@ -172,6 +172,7 @@
             <p class="fr-hint fr-hint-left" id="speaking-event-details-hint">Who's in the room, what you'd like them to walk away with, and any topic or theme you have in mind.</p>
             <textarea id="speaking-event-details" name="event_details" rows="4" maxlength="5000" required aria-describedby="speaking-event-details-hint"></textarea>
           </div>
+          <label class="field"><span>Speaking budget</span><select name="speaking_budget" required><option value="" disabled selected>Select a budget range</option><option>Under $1,500</option><option>$1,500 to $3,000</option><option>$3,000 to $5,000</option><option>$5,000+</option><option>Unpaid or in exchange for exposure</option><option>Not sure yet</option></select></label>
           <div class="field">
             <label for="speaking-logistics"><span>Logistics (optional)</span></label>
             <p class="fr-hint fr-hint-left" id="speaking-logistics-hint">Budget, travel, or anything else I should plan for.</p>
@@ -182,6 +183,7 @@
           <button type="submit" class="submit-btn">Send request</button>
           <p class="form-error" role="alert"></p>
         </form>
+        <p class="fr-hint fr-hint-left">Rates are shared on request. I reply within two business days.</p>
       </div>
       <div class="modal-success" role="status" tabindex="-1" hidden>
         <p class="success-title">Request sent</p>

@@ -9,6 +9,7 @@
   // finished assessment to your Google Sheet and emails the report to the
   // founder. Leave blank and results stay on the device only.
   const RESULTS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxtnhckqHy2eyVJnMOYl1WR-jOjqzd4e7VxL5EtvUtJiMjiAJ8tT4NK-0Jb28gV2_bIsQ/exec";
+  window.MISSYVE_APPS_SCRIPT_ENDPOINT = RESULTS_ENDPOINT;
 
   const BOOK_URL = "https://www.amazon.com/Cowgirl-Power-Kick-Business-Life/dp/1478948213";
 

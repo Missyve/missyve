@@ -20,6 +20,73 @@
     }
   }
 
+  function sendSpeakingInquiry(data) {
+    const endpoint = window.MISSYVE_APPS_SCRIPT_ENDPOINT;
+    if (!endpoint) return Promise.reject(new Error("The speaking request service is not configured."));
+
+    const requestId = window.crypto.randomUUID();
+    const iframe = document.createElement("iframe");
+    iframe.name = `speaking-inquiry-${requestId}`;
+    iframe.title = "Speaking inquiry status";
+    iframe.hidden = true;
+
+    const submission = document.createElement("form");
+    submission.method = "POST";
+    submission.action = `${endpoint}?formType=speakingInquiry`;
+    submission.target = iframe.name;
+    submission.hidden = true;
+
+    const values = {
+      name: data.name,
+      email: data.email,
+      organization: data.organization,
+      eventDate: data.eventDate,
+      audience: data.audience,
+      format: data.format,
+      event_details: data.event_details,
+      speaking_budget: data.speaking_budget,
+      notes: data.notes,
+      requestId,
+      website: data._honey || ""
+    };
+    for (const [name, value] of Object.entries(values)) {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = name;
+      input.value = String(value || "");
+      submission.append(input);
+    }
+
+    return new Promise((resolve, reject) => {
+      let timeoutId;
+      const finish = (error) => {
+        window.clearTimeout(timeoutId);
+        window.removeEventListener("message", onMessage);
+        submission.remove();
+        iframe.remove();
+        if (error) reject(error);
+        else resolve();
+      };
+      const onMessage = (event) => {
+        if (event.source !== iframe.contentWindow) return;
+        const result = event.data;
+        if (!result || result.type !== "speakingInquiryResult" || result.requestId !== requestId) return;
+        finish(result.ok ? null : new Error("The speaking request could not be accepted."));
+      };
+
+      window.addEventListener("message", onMessage);
+      document.body.append(iframe, submission);
+      timeoutId = window.setTimeout(() => {
+        finish(new Error("The speaking request timed out."));
+      }, 30000);
+      try {
+        submission.submit();
+      } catch (error) {
+        finish(error);
+      }
+    });
+  }
+
   document.addEventListener("submit", async (event) => {
     if (event.target !== form) return;
 
@@ -43,7 +110,8 @@
       body.hidden = true;
       success.hidden = false;
       form.reset();
-    } catch {
+    } catch (sendError) {
+      console.error("Contact message failed", sendError);
       error.append(
         document.createTextNode("We couldn't send your message. "),
         Object.assign(document.createElement("a"), {
@@ -69,6 +137,10 @@
     eventDetails.setCustomValidity(eventDetails.value.trim()
       ? ""
       : "Please share a little about your event so I can recommend the right talk.");
+    const speakingBudget = speakingForm.elements.speaking_budget;
+    speakingBudget.setCustomValidity(speakingBudget.value
+      ? ""
+      : "Please choose a budget range so I can recommend the right format.");
     if (!speakingForm.reportValidity()) return;
 
     const button = speakingForm.querySelector('button[type="submit"]');
@@ -77,12 +149,12 @@
     const content = dialog.querySelector(".speaking-form-content");
     const confirmation = dialog.querySelector(".modal-success");
     const data = Object.fromEntries(new FormData(speakingForm));
-    const message = `Name: ${data.name}\nEmail: ${data.email}\nOrganization: ${data.organization}\nEvent date: ${data.eventDate || "Not provided"}\nExpected audience size: ${data.audience || "Not provided"}\nFormat: ${data.format}\n\nTell me about your event:\n${data.event_details}\n\nLogistics:\n${data.notes || "Not provided"}`;
+    const message = `Name: ${data.name}\nEmail: ${data.email}\nOrganization: ${data.organization}\nEvent date: ${data.eventDate || "Not provided"}\nExpected audience size: ${data.audience || "Not provided"}\nFormat: ${data.format}\n\nTell me about your event:\n${data.event_details}\nSpeaking budget: ${data.speaking_budget}\n\nLogistics:\n${data.notes || "Not provided"}`;
     error.replaceChildren();
     button.disabled = true;
     button.textContent = "Sending...";
     try {
-      await sendContact(data);
+      await sendSpeakingInquiry(data);
       content.hidden = true;
       confirmation.hidden = false;
       if (dialog.open) confirmation.focus();
@@ -102,6 +174,20 @@
 
   document.addEventListener("input", (event) => {
     if (event.target.closest("#speakingForm") && (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)) {
+      event.target.setCustomValidity("");
+    }
+  });
+
+  document.addEventListener("invalid", (event) => {
+    if (event.target instanceof HTMLSelectElement && event.target.name === "speaking_budget") {
+      event.target.setCustomValidity(event.target.value
+        ? ""
+        : "Please choose a budget range so I can recommend the right format.");
+    }
+  }, true);
+
+  document.addEventListener("change", (event) => {
+    if (event.target instanceof HTMLSelectElement && event.target.name === "speaking_budget") {
       event.target.setCustomValidity("");
     }
   });
