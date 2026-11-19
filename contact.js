@@ -25,17 +25,6 @@
     if (!endpoint) return Promise.reject(new Error("The speaking request service is not configured."));
 
     const requestId = window.crypto.randomUUID();
-    const iframe = document.createElement("iframe");
-    iframe.name = `speaking-inquiry-${requestId}`;
-    iframe.title = "Speaking inquiry status";
-    iframe.hidden = true;
-
-    const submission = document.createElement("form");
-    submission.method = "POST";
-    submission.action = `${endpoint}?formType=speakingInquiry`;
-    submission.target = iframe.name;
-    submission.hidden = true;
-
     const values = {
       name: data.name,
       email: data.email,
@@ -49,41 +38,20 @@
       requestId,
       website: data._honey || ""
     };
+    const submission = new URLSearchParams();
     for (const [name, value] of Object.entries(values)) {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = name;
-      input.value = String(value || "");
-      submission.append(input);
+      submission.append(name, String(value || ""));
     }
 
-    return new Promise((resolve, reject) => {
-      let timeoutId;
-      const finish = (error) => {
-        window.clearTimeout(timeoutId);
-        window.removeEventListener("message", onMessage);
-        submission.remove();
-        iframe.remove();
-        if (error) reject(error);
-        else resolve();
-      };
-      const onMessage = (event) => {
-        if (event.source !== iframe.contentWindow) return;
-        const result = event.data;
-        if (!result || result.type !== "speakingInquiryResult" || result.requestId !== requestId) return;
-        finish(result.ok ? null : new Error("The speaking request could not be accepted."));
-      };
-
-      window.addEventListener("message", onMessage);
-      document.body.append(iframe, submission);
-      timeoutId = window.setTimeout(() => {
-        finish(new Error("The speaking request timed out."));
-      }, 30000);
-      try {
-        submission.submit();
-      } catch (error) {
-        finish(error);
-      }
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 30000);
+    return fetch(`${endpoint}?formType=speakingInquiry`, {
+      method: "POST",
+      mode: "no-cors",
+      body: submission,
+      signal: controller.signal
+    }).then(() => undefined).finally(() => {
+      window.clearTimeout(timeoutId);
     });
   }
 
